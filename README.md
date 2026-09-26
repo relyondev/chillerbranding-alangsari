@@ -101,3 +101,7 @@ Lihat CHANGELOG.md dan `supabase/migrations/022_admin_create_stockpoint.sql`.
 
 ## V1.2.0
 Admin password reset, role create restriction, dark/light theme, and mobile responsive table cards.
+
+
+### V1.2.1 hotfix
+Desktop Data Pekerjaan table now preserves all columns with contained horizontal scrolling.

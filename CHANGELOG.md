@@ -1,4 +1,10 @@
 
+## 1.2.1
+- Hotfix Data Pekerjaan desktop table: restore all columns.
+- Desktop table now scrolls horizontally inside the table container when needed.
+- Mobile card view, sorting, and pagination remain unchanged.
+
+
 ## 1.1.0 — Admin UX & Session
 - Admin/Super Admin menu Pekerjaan digabung menjadi satu Data Pekerjaan dengan export dan Spreadsheet sync.
 - Detail foto menampilkan nama warung sebagai heading konten.
