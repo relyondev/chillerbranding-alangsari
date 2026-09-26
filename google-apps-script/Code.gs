@@ -76,12 +76,72 @@ function childFolder_(parent, name) {
   return it.hasNext() ? it.next() : parent.createFolder(safe);
 }
 
-function uniqueStoreFolder_(parent, baseName) {
-  const base = sanitize_(baseName);
-  if (!parent.getFoldersByName(base).hasNext()) return parent.createFolder(base);
-  let n = 2;
-  while (parent.getFoldersByName(base + " (" + n + ")").hasNext()) n++;
-  return parent.createFolder(base + " (" + n + ")");
+function storeFolderPropertyKey_(submissionId) {
+  return "STORE_FOLDER_" + String(submissionId || "").replace(/[^a-zA-Z0-9_-]/g, "");
+}
+
+function folderByIdIfUsable_(folderId) {
+  if (!folderId) return null;
+  try {
+    const folder = DriveApp.getFolderById(folderId);
+    if (folder.isTrashed()) return null;
+    return folder;
+  } catch (err) {
+    return null;
+  }
+}
+
+function findStoreFolderByMarker_(parent, submissionId) {
+  const marker = "BRANDING_OPS_SUBMISSION:" + String(submissionId || "");
+  const folders = parent.getFolders();
+  while (folders.hasNext()) {
+    const folder = folders.next();
+    try {
+      if (!folder.isTrashed() && folder.getDescription() === marker) return folder;
+    } catch (err) {}
+  }
+  return null;
+}
+
+function resolveStoreFolder_(root, b) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const branch = childFolder_(root, b.branch);
+    const stock = childFolder_(branch, b.stockpoint);
+    const pic = childFolder_(stock, b.picFolder);
+
+    // A DB-persisted folder ID is authoritative when already available.
+    let store = folderByIdIfUsable_(b.storeFolderId);
+    if (store) return store;
+
+    if (!b.submissionId) throw new Error("submission_id_required");
+
+    // Script Properties make folder resolution idempotent across concurrent uploads.
+    const props = props_();
+    const propertyKey = storeFolderPropertyKey_(b.submissionId);
+    store = folderByIdIfUsable_(props.getProperty(propertyKey));
+    if (store) return store;
+
+    // Marker lookup is a durable fallback if Script Properties were cleared.
+    store = findStoreFolderByMarker_(pic, b.submissionId);
+    if (!store) {
+      const base = sanitize_(b.storeName);
+      let name = base;
+      let n = 2;
+      while (pic.getFoldersByName(name).hasNext()) {
+        name = base + " (" + n + ")";
+        n++;
+      }
+      store = pic.createFolder(name);
+      store.setDescription("BRANDING_OPS_SUBMISSION:" + String(b.submissionId));
+    }
+
+    props.setProperty(propertyKey, store.getId());
+    return store;
+  } finally {
+    lock.releaseLock();
+  }
 }
 
 function mimeExt_(mime) {
@@ -92,10 +152,7 @@ function mimeExt_(mime) {
 
 function uploadPhoto_(b) {
   const root = DriveApp.getFolderById(props_().getProperty("DRIVE_ROOT_ID"));
-  const branch = childFolder_(root, b.branch);
-  const stock = childFolder_(branch, b.stockpoint);
-  const pic = childFolder_(stock, b.picFolder);
-  const store = b.storeFolderId ? DriveApp.getFolderById(b.storeFolderId) : uniqueStoreFolder_(pic, b.storeName);
+  const store = resolveStoreFolder_(root, b);
 
   const label = PHOTO_LABELS[b.photoType];
   if (!label) throw new Error("invalid_photo_type");

@@ -91,6 +91,7 @@ Deno.serve(async (req) => {
 
     const google = await callAppsScript({
       op: "upload_photo",
+      submissionId: s.id,
       storeFolderId: s.drive_store_folder_id ?? null,
       branch: s.branch_name_snapshot,
       branchCode: s.branch_code_snapshot,

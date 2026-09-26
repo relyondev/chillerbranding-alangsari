@@ -5,7 +5,7 @@ import {
   RefreshCw,
   UploadCloud,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "../../lib/supabase/client";
 
 type PhotoType =
@@ -57,6 +57,12 @@ export default function PhotoUploader({
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<Record<string, boolean>>({});
   const [loadingExisting, setLoadingExisting] = useState(true);
+  const doneRef = useRef<Record<string, boolean>>({});
+  const onCompleteRef = useRef(onComplete);
+
+  useEffect(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
 
   useEffect(() => {
     let cancelled = false;
@@ -81,12 +87,14 @@ export default function PhotoUploader({
           initial[row.photo_type] = true;
         }
 
+        doneRef.current = initial;
         setDone(initial);
-        onComplete?.(types.every((type) => initial[type]));
+        onCompleteRef.current?.(types.every((type) => initial[type]));
       } catch {
         if (!cancelled) {
+          doneRef.current = {};
           setDone({});
-          onComplete?.(false);
+          onCompleteRef.current?.(false);
         }
       } finally {
         if (!cancelled) setLoadingExisting(false);
@@ -96,7 +104,7 @@ export default function PhotoUploader({
     return () => {
       cancelled = true;
     };
-  }, [submissionId, types, onComplete]);
+  }, [submissionId, types]);
 
   async function upload(type: PhotoType, file?: File) {
     if (!file) return;
@@ -137,9 +145,10 @@ export default function PhotoUploader({
         throw new Error(payload?.error || "Upload gagal.");
       }
 
-      const next = { ...done, [type]: true };
+      const next = { ...doneRef.current, [type]: true };
+      doneRef.current = next;
       setDone(next);
-      onComplete?.(types.every((t) => next[t]));
+      onCompleteRef.current?.(types.every((t) => next[t]));
 
       if (payload?.photo?.version) {
         window.dispatchEvent(

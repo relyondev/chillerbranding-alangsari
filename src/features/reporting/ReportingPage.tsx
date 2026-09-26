@@ -1,5 +1,5 @@
 import { notify } from "../../components/ui/ToastHost";
-import { Download, FileSpreadsheet, FileText, MapPin, RefreshCw, RotateCcw, Search, Images, Undo2, CloudUpload, X } from "lucide-react";
+import { Download, ExternalLink, FileSpreadsheet, FileText, MapPin, RefreshCw, RotateCcw, Search, Images, Undo2, CloudUpload, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
@@ -166,6 +166,16 @@ export default function ReportingPage({ operational = false }: { operational?: b
                   <FileText size={16}/>
                   Export PDF
                 </button>
+                <a
+                  href="https://docs.google.com/spreadsheets/d/1ICeMYceuEGQEA6PJQ8vg-Iwi4RuPbTTHzC_U18c-WKk/edit"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={()=>setExportOpen(false)}
+                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-left text-sm font-medium text-slate-600 hover:bg-[#F5F9FF]"
+                >
+                  <ExternalLink size={16}/>
+                  Buka Spreadsheet
+                </a>
               </div>
             )}
           </div>
