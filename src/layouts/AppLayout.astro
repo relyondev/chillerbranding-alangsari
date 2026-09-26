@@ -1,0 +1,37 @@
+---
+import "@fontsource/poppins/400.css";
+import "@fontsource/poppins/500.css";
+import "@fontsource/poppins/600.css";
+import "@fontsource/poppins/700.css";
+import "../styles/global.css";
+import RoleAwareSidebar from "../components/navigation/RoleAwareSidebar";
+import Topbar from "../components/layout/Topbar";
+import ToastHost from "../components/ui/ToastHost";
+import AppFooter from "../components/layout/AppFooter.astro";
+
+interface Props { title: string; }
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="Sistem Operasional Branding Warung" />
+    <meta name="theme-color" content="#0B1D3A" />
+    <title>{title} | Branding Ops App</title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+</head>
+  <body>
+    <div class="min-h-screen">
+      <RoleAwareSidebar client:load />
+      <div class="lg:pl-72">
+        <Topbar title={title} client:load />
+        <main class="px-4 py-6 sm:px-6 lg:px-8"><slot /></main>
+        <AppFooter />
+      </div>
+    </div>
+    <ToastHost client:load />
+</body>
+</html>

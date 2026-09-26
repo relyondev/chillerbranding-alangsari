@@ -1,0 +1,40 @@
+---
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<header class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-[#1565EF]/10 bg-white/90 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+  <div class="flex items-center gap-3">
+    <button
+      id="open-mobile-menu"
+      class="flex h-10 w-10 items-center justify-center rounded-xl border border-[#BEE6FF] bg-white text-xl text-[#0B1D3A] shadow-sm lg:hidden"
+      aria-label="Buka menu"
+    >
+      ☰
+    </button>
+
+    <div>
+      <h1 class="text-lg font-semibold text-[#0B1D3A] sm:text-xl">{title}</h1>
+      <p class="hidden text-xs text-slate-400 sm:block">Sistem Operasional Branding Warung</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <div class="hidden text-right sm:block">
+      <p class="text-sm font-semibold text-[#0B1D3A]">User Demo</p>
+      <p id="topbar-role-label" class="text-xs text-slate-400">Super Admin</p>
+    </div>
+
+    <div class="flex h-10 w-10 items-center justify-center rounded-full bg-[#1565EF] text-sm font-semibold text-white shadow-sm">
+      U
+    </div>
+  </div>
+</header>
+
+<script>
+  document.querySelector("#open-mobile-menu")?.addEventListener("click", () => {
+    document.dispatchEvent(new CustomEvent("open-mobile-menu"));
+  });
+</script>

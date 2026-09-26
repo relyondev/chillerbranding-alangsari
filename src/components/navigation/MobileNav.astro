@@ -1,0 +1,68 @@
+---
+const menu = [
+  { label: "Dashboard", href: "/app/dashboard", roles: ["super_admin","admin","pic","client"] },
+  { label: "Input Branding", href: "/app/submissions", roles: ["pic"] },
+  { label: "Pekerjaan", href: "/app/reporting", roles: ["super_admin","admin"] },
+  { label: "Pekerjaan Saya", href: "/app/reporting", roles: ["pic"] },
+  { label: "Laporan", href: "/app/reporting", roles: ["client"] },
+  { label: "Manajemen User", href: "/app/users", roles: ["super_admin","admin"] },
+  { label: "Master Data", href: "/app/master-data", roles: ["super_admin","admin"] },
+  { label: "Akun", href: "/app/account", roles: ["super_admin","admin","pic","client"] },
+];
+---
+
+<div class="lg:hidden">
+  <div id="mobile-overlay" class="fixed inset-0 z-40 hidden bg-[#0B1D3A]/50 backdrop-blur-sm"></div>
+
+  <aside
+    id="mobile-sidebar"
+    class="fixed inset-y-0 left-0 z-50 w-72 -translate-x-full bg-[#0B1D3A] shadow-2xl transition-transform duration-200"
+  >
+    <div class="flex h-20 items-center justify-between border-b border-white/10 px-6">
+      <div>
+        <p class="font-bold text-white">Branding Ops</p>
+        <p id="mobile-role-label" class="text-xs text-[#BEE6FF]">Super Admin</p>
+      </div>
+
+      <button
+        id="close-mobile-menu"
+        class="flex h-10 w-10 items-center justify-center rounded-lg text-white hover:bg-white/10"
+        aria-label="Tutup menu"
+      >
+        ✕
+      </button>
+    </div>
+
+    <nav class="space-y-1 p-4">
+      {menu.map((item) => (
+        <a
+          href={item.href}
+          data-role-nav
+          data-roles={item.roles.join(",")}
+          class="block rounded-xl px-4 py-3 text-sm font-medium text-slate-200 transition hover:bg-white/10 hover:text-white"
+        >
+          {item.label}
+        </a>
+      ))}
+    </nav>
+  </aside>
+</div>
+
+<script>
+  const sidebar = document.querySelector("#mobile-sidebar");
+  const overlay = document.querySelector("#mobile-overlay");
+  const closeButton = document.querySelector("#close-mobile-menu");
+
+  const closeMenu = () => {
+    sidebar?.classList.add("-translate-x-full");
+    overlay?.classList.add("hidden");
+  };
+
+  closeButton?.addEventListener("click", closeMenu);
+  overlay?.addEventListener("click", closeMenu);
+
+  document.addEventListener("open-mobile-menu", () => {
+    sidebar?.classList.remove("-translate-x-full");
+    overlay?.classList.remove("hidden");
+  });
+</script>
