@@ -83,3 +83,12 @@
 - [ ] Sidebar tidak menampilkan card Project.
 - [ ] Footer memiliki spasi antara ikon love dan kata by.
 - [ ] Setelah 2 jam tanpa aktivitas user logout otomatis dan login menampilkan pesan timeout.
+
+
+## V1.2.0 QA
+- [ ] Admin create modal only offers PIC/Klien.
+- [ ] Super Admin can still create Admin/Super Admin/PIC/Klien.
+- [ ] Admin can reset PIC/Klien password; cannot reset Admin/Super Admin.
+- [ ] Super Admin can reset supported users.
+- [ ] Dark/light mode survives refresh and text remains readable.
+- [ ] Data Pekerjaan, Stockpoint, User Management show card view on mobile without horizontal page scrolling.

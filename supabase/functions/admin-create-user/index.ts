@@ -26,6 +26,13 @@ Deno.serve(async (req) => {
 
     const body = await req.json();
 
+    if (actor.role === "admin" && !["pic", "client"].includes(body.role)) {
+      return jsonResponse(
+        { error: "admin_can_only_create_pic_or_client" },
+        { status: 403 }
+      );
+    }
+
     if (body.role === "super_admin" && actor.role !== "super_admin") {
       return jsonResponse(
         { error: "super_admin_required" },

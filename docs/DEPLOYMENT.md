@@ -60,3 +60,7 @@ Commit and push to `main`. Vercel should deploy from the connected repository.
 ## 7. Smoke Test
 
 Follow [QA_CHECKLIST.md](QA_CHECKLIST.md) before tagging the release.
+
+
+### V1.2.0 Edge Function
+Deploy: `supabase functions deploy admin-reset-password --project-ref mengddxsnoczoibuwmnr`

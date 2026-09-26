@@ -14,3 +14,7 @@ For the current production stack:
 8. Smoke test multiple concurrent photo uploads and verify only one Stockpoint/store folder is created per task.
 9. Run the full `QA_CHECKLIST.md`.
 10. Tag Git only after production passes QA.
+
+
+### V1.2.0 Edge Function
+Deploy: `supabase functions deploy admin-reset-password --project-ref mengddxsnoczoibuwmnr`

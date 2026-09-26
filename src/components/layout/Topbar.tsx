@@ -6,6 +6,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { useAppRole } from "../../hooks/useAppRole";
 import { getSupabaseClient } from "../../lib/supabase/client";
+import ThemeToggle from "../ui/ThemeToggle";
 
 const label = {
   super_admin: "Super Admin",
@@ -51,7 +52,9 @@ export default function Topbar({ title }: { title: string }) {
         </h1>
       </div>
 
-      <div ref={wrapperRef} className="relative">
+      <div className="flex items-center gap-2">
+        <ThemeToggle compact />
+        <div ref={wrapperRef} className="relative">
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
@@ -105,6 +108,7 @@ export default function Topbar({ title }: { title: string }) {
             </div>
           </div>
         )}
+        </div>
       </div>
     </header>
   );

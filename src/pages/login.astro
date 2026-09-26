@@ -5,6 +5,7 @@ import "@fontsource/poppins/600.css";
 import "@fontsource/poppins/700.css";
 import "../styles/global.css";
 import LoginForm from "../features/auth/LoginForm";
+import ThemeToggle from "../components/ui/ThemeToggle";
 ---
 
 <!doctype html>
@@ -13,11 +14,20 @@ import LoginForm from "../features/auth/LoginForm";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#0B1D3A" />
+    <script is:inline>
+      try {
+        const saved = localStorage.getItem("branding-ops-theme");
+        const theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.classList.toggle("dark", theme === "dark");
+        document.documentElement.dataset.theme = theme;
+      } catch {}
+    </script>
     <title>Login | Branding Ops App</title>
   </head>
 
   <body class="min-h-screen bg-[linear-gradient(180deg,#F4F8FE_0%,#ECF4FF_100%)]">
-    <main class="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+    <main class="relative min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+      <div class="absolute right-4 top-4 z-20 sm:right-6 sm:top-6"><ThemeToggle client:load compact /></div>
       <div class="mx-auto max-w-[1320px]">
         <header class="mb-6 text-center sm:mb-8">
           <h1 class="text-[26px] font-bold leading-tight tracking-[-0.03em] text-[#0B1D3A] sm:text-[38px]">

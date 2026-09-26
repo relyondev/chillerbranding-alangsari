@@ -4,6 +4,7 @@ import {
   ArrowUp,
   ArrowUpDown,
   Check,
+  KeyRound,
   ChevronDown,
   Search,
   UserPlus,
@@ -11,6 +12,7 @@ import {
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getSupabaseClient } from "../../lib/supabase/client";
+import { useAppRole } from "../../hooks/useAppRole";
 
 type Branch = {
   id: string;
@@ -225,6 +227,7 @@ function StockpointPicker({
 }
 
 export default function UserManagementPage() {
+  const { role: actorRole } = useAppRole();
   const [rows, setRows] = useState<any[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -242,6 +245,10 @@ export default function UserManagementPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
+  const [resetTarget, setResetTarget] = useState<any | null>(null);
+  const [resetPassword, setResetPassword] = useState("");
+  const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
 
   async function load() {
     try {
@@ -417,6 +424,30 @@ export default function UserManagementPage() {
     }
   }
 
+
+async function submitPasswordReset(event: React.FormEvent) {
+  event.preventDefault();
+  if (!resetTarget) return;
+  if (resetPassword.length < 8) { notify("error","Password terlalu pendek","Password baru minimal 8 karakter."); return; }
+  if (resetPassword !== resetPasswordConfirm) { notify("error","Konfirmasi tidak sama","Password baru dan konfirmasi harus sama."); return; }
+  setResettingPassword(true);
+  try {
+    const s = getSupabaseClient();
+    const { data: { session } } = await s.auth.getSession();
+    const res = await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/admin-reset-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${session?.access_token}` },
+      body: JSON.stringify({ user_id: resetTarget.id, password: resetPassword }),
+    });
+    const payload = await res.json().catch(() => ({ error: "reset_password_failed" }));
+    if (!res.ok) throw new Error(payload.error || "Reset password gagal.");
+    notify("success","Password berhasil direset",`Password ${resetTarget.full_name} sudah diperbarui.`);
+    setResetTarget(null); setResetPassword(""); setResetPasswordConfirm("");
+  } catch (error) {
+    notify("error","Reset password gagal",error instanceof Error ? error.message : "Reset password gagal.");
+  } finally { setResettingPassword(false); }
+}
+
   const filteredRows = rows.filter((row) => {
     const q = userSearch.trim().toLowerCase();
     const roleOk = !userRoleFilter || row.role === userRoleFilter;
@@ -449,7 +480,7 @@ export default function UserManagementPage() {
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            Kelola Super Admin, Admin, PIC, dan Klien.
+            {actorRole === "admin" ? "Kelola PIC dan Klien." : "Kelola Super Admin, Admin, PIC, dan Klien."}
           </p>
         </div>
 
@@ -487,7 +518,7 @@ export default function UserManagementPage() {
       </div>
 
       <div className="brand-card mt-6 overflow-hidden rounded-2xl">
-        <div className="overflow-x-auto">
+        <div className="hidden md:block">
           <table className="min-w-full text-sm">
             <thead className="bg-[#F5F9FF]">
               <tr>
@@ -502,6 +533,7 @@ export default function UserManagementPage() {
                     <button type="button" onClick={()=>toggleSort(key)} className="inline-flex items-center gap-1.5 hover:text-[#1565EF]">{label}<SortIcon column={key}/></button>
                   </th>
                 ))}
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500">Aksi</th>
               </tr>
             </thead>
 
@@ -528,15 +560,20 @@ export default function UserManagementPage() {
                       {r.pic_profiles?.pic_code ?? "—"}
                     </td>
 
+                    <td className="px-5 py-3">{r.is_active ? "Aktif" : "Nonaktif"}</td>
                     <td className="px-5 py-3">
-                      {r.is_active ? "Aktif" : "Nonaktif"}
+                      {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && (
+                        <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex items-center gap-1.5 rounded-lg border border-[#BEE6FF] px-3 py-2 text-xs font-semibold text-[#1565EF]">
+                          <KeyRound size={14}/> Reset Password
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     className="px-5 py-10 text-center text-sm text-slate-400"
                   >
                     Belum ada data user.
@@ -545,6 +582,15 @@ export default function UserManagementPage() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="space-y-3 p-3 md:hidden">
+          {pagedRows.length ? pagedRows.map((r)=>(
+            <article key={r.id} className="mobile-data-card rounded-2xl border border-slate-200 bg-white p-4">
+              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{r.full_name}</p><p className="mt-1 break-all text-xs text-slate-500">{r.email}</p></div><span className="rounded-full bg-[#EEF6FF] px-2.5 py-1 text-[11px] font-semibold text-[#1565EF]">{r.role}</span></div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">ID PIC</dt><dd className="mt-1 font-medium">{r.pic_profiles?.pic_code ?? "—"}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Status</dt><dd className="mt-1 font-medium">{r.is_active?"Aktif":"Nonaktif"}</dd></div></dl>
+              {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#BEE6FF] px-3 py-2.5 text-sm font-semibold text-[#1565EF]"><KeyRound size={15}/>Reset Password</button>}
+            </article>
+          )) : <div className="py-10 text-center text-sm text-slate-400">Belum ada data user.</div>}
         </div>
         <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2 text-sm text-slate-500">
@@ -633,11 +679,9 @@ export default function UserManagementPage() {
                   className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
                 >
                   <option value="pic">PIC</option>
-                  <option value="admin">Admin</option>
                   <option value="client">Klien</option>
-                  <option value="super_admin">
-                    Super Admin
-                  </option>
+                  {actorRole === "super_admin" && <option value="admin">Admin</option>}
+                  {actorRole === "super_admin" && <option value="super_admin">Super Admin</option>}
                 </select>
               </label>
 
@@ -740,6 +784,17 @@ export default function UserManagementPage() {
                   : "Buat User"}
               </button>
             </div>
+          </form>
+        </div>
+      )}
+
+      {resetTarget && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1D3A]/55 p-4 backdrop-blur-sm">
+          <form onSubmit={submitPasswordReset} className="w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+            <div className="flex items-start justify-between gap-4"><div><h3 className="text-lg font-bold text-[#0B1D3A]">Reset Password</h3><p className="mt-1 text-sm text-slate-500">{resetTarget.full_name} · {resetTarget.email}</p></div><button type="button" onClick={()=>setResetTarget(null)} className="rounded-xl border border-slate-200 p-2 text-slate-500"><X size={17}/></button></div>
+            <div className="mt-5 space-y-4"><label className="block text-sm font-semibold text-slate-600">Password Baru<input autoFocus type="password" minLength={8} value={resetPassword} onChange={e=>setResetPassword(e.target.value)} placeholder="Minimal 8 karakter" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal"/></label><label className="block text-sm font-semibold text-slate-600">Konfirmasi Password<input type="password" minLength={8} value={resetPasswordConfirm} onChange={e=>setResetPasswordConfirm(e.target.value)} placeholder="Ulangi password baru" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal"/></label></div>
+            <p className="mt-4 text-xs leading-5 text-slate-400">Password tidak disimpan ke database maupun Audit Log.</p>
+            <div className="mt-6 flex justify-end gap-2"><button type="button" onClick={()=>setResetTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button><button disabled={resettingPassword} className="rounded-xl bg-[#1565EF] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{resettingPassword?"Memproses...":"Simpan Password Baru"}</button></div>
           </form>
         </div>
       )}

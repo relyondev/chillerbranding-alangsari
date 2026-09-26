@@ -50,3 +50,10 @@
 ## 1.0.0
 
 - Initial V1 production candidate with role-based workflows, reporting, exports, Drive/Spreadsheet integration, reopen flow, photo upload, and PIC scope.
+
+## 1.2.0
+- Admin reset password user dengan password baru melalui Edge Function aman.
+- Admin hanya dapat membuat PIC dan Klien; Super Admin tetap dapat membuat seluruh role.
+- Dark / Light mode dengan penyimpanan preferensi lokal.
+- Mobile table Data Pekerjaan, Master Stockpoint, dan Manajemen User berubah menjadi card view agar tidak horizontal-scroll.
+- Tambah `admin-reset-password` Edge Function dan audit event tanpa menyimpan password.
