@@ -9,6 +9,7 @@ export default function LoginForm() {
   const [show, setShow] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const inactiveLogout = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("reason") === "inactive";
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -46,6 +47,7 @@ export default function LoginForm() {
 
   return (
     <form className="mt-7 space-y-7" onSubmit={onSubmit}>
+      {inactiveLogout && <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">Sesi berakhir otomatis karena tidak ada aktivitas selama 2 jam. Silakan login kembali.</div>}
       <div>
         <label htmlFor="email" className="block text-[16px] font-semibold text-[#0B1D3A]">Email</label>
         <div className="relative mt-3">

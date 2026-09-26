@@ -4,7 +4,7 @@ Production web application for Relyon Production to manage warung branding field
 
 ## Release
 
-**V1 Final Lock — 1.0.4**
+**V1 Final Lock — 1.1.0**
 
 This release is the locked V1 baseline. New features should be developed as V1.1+ or V2 rather than changing the V1 workflow silently.
 
@@ -93,3 +93,7 @@ See [docs/DATABASE.md](docs/DATABASE.md).
 ## Ownership
 
 © 2026 Sistem Operasional Branding Warung. Made with ♥ by RELYON PRODUCTION.
+
+
+## V1.1.0 Admin UX
+Lihat CHANGELOG.md dan `supabase/migrations/022_admin_create_stockpoint.sql`.

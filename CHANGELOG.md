@@ -1,3 +1,15 @@
+
+## 1.1.0 — Admin UX & Session
+- Admin/Super Admin menu Pekerjaan digabung menjadi satu Data Pekerjaan dengan export dan Spreadsheet sync.
+- Detail foto menampilkan nama warung sebagai heading konten.
+- Tambah Stockpoint aktif melalui RPC terproteksi role Admin/Super Admin.
+- Sorting dan pagination pada Data Pekerjaan, Master Stockpoint, dan Manajemen User.
+- Data Pekerjaan default urut data terbaru.
+- Sidebar project card dihapus.
+- Footer spacing diperbaiki.
+- Auto logout setelah 2 jam tanpa aktivitas, dengan pesan saat kembali ke login.
+- Migration baru: 022_admin_create_stockpoint.sql.
+
 # Changelog
 
 ## 1.0.4

@@ -72,3 +72,14 @@
 - [ ] PIC Input mobile
 - [ ] Photo uploader mobile
 - [ ] Reporting mobile/table horizontal scroll
+
+
+## V1.1.0 checks
+- [ ] Admin/Super Admin hanya melihat satu menu Data Pekerjaan di grup Pekerjaan.
+- [ ] Data Pekerjaan default newest-first; semua header sortable; pagination 10/25/50/100/All.
+- [ ] Master Data: Tambah Stockpoint berhasil dan duplicate ditolak; header sortable; pagination 25/50/100/250/All.
+- [ ] Manajemen User: header sortable; pagination 10/25/50/100/All.
+- [ ] Detail foto menampilkan nama warung pada heading konten.
+- [ ] Sidebar tidak menampilkan card Project.
+- [ ] Footer memiliki spasi antara ikon love dan kata by.
+- [ ] Setelah 2 jam tanpa aktivitas user logout otomatis dan login menampilkan pesan timeout.

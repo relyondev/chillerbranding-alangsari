@@ -143,12 +143,7 @@ export default function RoleAwareSidebar() {
           </div>
         </div>
         <NavContent />
-        <div className="space-y-3 border-t border-white/10 p-4">
-          <div className="rounded-xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-[#4DB6FF]">Project</p>
-            <p className="mt-1 text-sm font-semibold text-white">Branding Ops App</p>
-            <p className="mt-1 text-xs text-slate-400">Clean-slate system</p>
-          </div>
+        <div className="border-t border-white/10 p-4">
           <LogoutButton />
         </div>
       </aside>

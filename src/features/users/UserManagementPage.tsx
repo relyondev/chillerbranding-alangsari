@@ -1,5 +1,8 @@
 import { notify } from "../../components/ui/ToastHost";
 import {
+  ArrowDown,
+  ArrowUp,
+  ArrowUpDown,
   Check,
   ChevronDown,
   Search,
@@ -235,6 +238,10 @@ export default function UserManagementPage() {
   const [saving, setSaving] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
+  const [sortKey, setSortKey] = useState("full_name");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [pageSize, setPageSize] = useState("10");
+  const [page, setPage] = useState(1);
 
   async function load() {
     try {
@@ -414,12 +421,24 @@ export default function UserManagementPage() {
     const q = userSearch.trim().toLowerCase();
     const roleOk = !userRoleFilter || row.role === userRoleFilter;
     const queryOk = !q || [row.full_name, row.email, row.role, row.pic_profiles?.pic_code]
-      .filter(Boolean)
-      .join(" ")
-      .toLowerCase()
-      .includes(q);
+      .filter(Boolean).join(" ").toLowerCase().includes(q);
     return roleOk && queryOk;
   });
+
+  const sortedRows = [...filteredRows].sort((a,b) => {
+    const av = sortKey === "pic_code" ? a.pic_profiles?.pic_code : a[sortKey];
+    const bv = sortKey === "pic_code" ? b.pic_profiles?.pic_code : b[sortKey];
+    const aa = typeof av === "boolean" ? Number(av) : String(av ?? "").toLowerCase();
+    const bb = typeof bv === "boolean" ? Number(bv) : String(bv ?? "").toLowerCase();
+    const cmp = aa < bb ? -1 : aa > bb ? 1 : 0;
+    return sortDir === "asc" ? cmp : -cmp;
+  });
+  const size = pageSize === "all" ? Math.max(sortedRows.length,1) : Number(pageSize);
+  const totalPages = Math.max(1, Math.ceil(sortedRows.length / size));
+  const safePage = Math.min(page,totalPages);
+  const pagedRows = pageSize === "all" ? sortedRows : sortedRows.slice((safePage-1)*size, safePage*size);
+  function toggleSort(key:string){ if(sortKey===key) setSortDir(v=>v==="asc"?"desc":"asc"); else {setSortKey(key);setSortDir("asc");} setPage(1); }
+  function SortIcon({column}:{column:string}){ return sortKey!==column?<ArrowUpDown size={14}/>:sortDir==="asc"?<ArrowUp size={14}/>:<ArrowDown size={14}/>; }
 
   return (
     <section>
@@ -447,13 +466,13 @@ export default function UserManagementPage() {
         <div className="grid gap-3 md:grid-cols-[1fr_220px_auto_auto]">
           <input
             value={userSearch}
-            onChange={(e)=>setUserSearch(e.target.value)}
+            onChange={(e)=>{setUserSearch(e.target.value);setPage(1);}}
             placeholder="Cari nama, email, ID PIC..."
             className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#1565EF]"
           />
           <select
             value={userRoleFilter}
-            onChange={(e)=>setUserRoleFilter(e.target.value)}
+            onChange={(e)=>{setUserRoleFilter(e.target.value);setPage(1);}}
             className="rounded-xl border border-slate-200 px-4 py-3 text-sm"
           >
             <option value="">Semua Role</option>
@@ -473,25 +492,22 @@ export default function UserManagementPage() {
             <thead className="bg-[#F5F9FF]">
               <tr>
                 {[
-                  "Nama",
-                  "Email",
-                  "Role",
-                  "ID PIC",
-                  "Status",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="px-5 py-3 text-left text-xs font-semibold text-slate-500"
-                  >
-                    {h}
+                  ["Nama","full_name"],
+                  ["Email","email"],
+                  ["Role","role"],
+                  ["ID PIC","pic_code"],
+                  ["Status","is_active"],
+                ].map(([label,key]) => (
+                  <th key={key} className="px-5 py-3 text-left text-xs font-semibold text-slate-500">
+                    <button type="button" onClick={()=>toggleSort(key)} className="inline-flex items-center gap-1.5 hover:text-[#1565EF]">{label}<SortIcon column={key}/></button>
                   </th>
                 ))}
               </tr>
             </thead>
 
             <tbody>
-              {filteredRows.length ? (
-                filteredRows.map((r) => (
+              {pagedRows.length ? (
+                pagedRows.map((r) => (
                   <tr
                     key={r.id}
                     className="border-t border-slate-100"
@@ -529,6 +545,20 @@ export default function UserManagementPage() {
               )}
             </tbody>
           </table>
+        </div>
+        <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span>Tampilkan</span>
+            <select value={pageSize} onChange={(e)=>{setPageSize(e.target.value);setPage(1);}} className="rounded-lg border border-slate-200 px-2 py-1.5">
+              <option>10</option><option>25</option><option>50</option><option>100</option><option value="all">All</option>
+            </select>
+            <span>dari {sortedRows.length} data</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button disabled={safePage<=1} onClick={()=>setPage(p=>Math.max(1,p-1))} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold disabled:opacity-40">Sebelumnya</button>
+            <span className="text-sm text-slate-500">{pageSize==="all"?"Semua data":`Halaman ${safePage} / ${totalPages}`}</span>
+            <button disabled={safePage>=totalPages||pageSize==="all"} onClick={()=>setPage(p=>Math.min(totalPages,p+1))} className="rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-semibold disabled:opacity-40">Berikutnya</button>
+          </div>
         </div>
       </div>
 

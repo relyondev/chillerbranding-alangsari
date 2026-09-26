@@ -8,6 +8,7 @@ import RoleAwareSidebar from "../components/navigation/RoleAwareSidebar";
 import Topbar from "../components/layout/Topbar";
 import ToastHost from "../components/ui/ToastHost";
 import AppFooter from "../components/layout/AppFooter.astro";
+import InactivityGuard from "../components/auth/InactivityGuard";
 
 interface Props { title: string; }
 const { title } = Astro.props;
@@ -32,6 +33,7 @@ const { title } = Astro.props;
         <AppFooter />
       </div>
     </div>
+    <InactivityGuard client:load />
     <ToastHost client:load />
 </body>
 </html>

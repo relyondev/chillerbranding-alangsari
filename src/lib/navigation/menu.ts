@@ -24,7 +24,6 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       icon: BriefcaseBusiness,
       items: [
         { label: "Data Pekerjaan", href: "/app/jobs", icon: ClipboardList },
-        { label: "Laporan & Export", href: "/app/reporting", icon: BarChart3 },
       ],
     },
     {
@@ -51,7 +50,6 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       icon: BriefcaseBusiness,
       items: [
         { label: "Data Pekerjaan", href: "/app/jobs", icon: ClipboardList },
-        { label: "Laporan & Export", href: "/app/reporting", icon: BarChart3 },
       ],
     },
     {
