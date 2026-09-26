@@ -56,8 +56,10 @@ export async function syncSubmissionToSpreadsheet(
       "Nama Pemilik Toko": s.owner_name,
       "Nomor HP/WA": s.owner_phone,
       "Alamat Lengkap Toko": s.store_address,
-      "Titik GPS Lokasi Toko":
-        `https://www.google.com/maps?q=${s.latitude},${s.longitude}`,
+      "Titik GPS Lokasi Toko": s.google_maps_url ??
+        (s.latitude != null && s.longitude != null
+          ? `https://www.google.com/maps?q=${s.latitude},${s.longitude}`
+          : ""),
       "Jenis Store": String(s.store_type ?? "").toUpperCase(),
       "Chiller": s.has_chiller ? "YA" : "TIDAK",
       "Status":

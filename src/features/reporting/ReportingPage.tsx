@@ -85,7 +85,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
       "Tanggal":r.installation_date,"Cabang":r.branch_name,"Stock Point":r.stockpoint_name,"ID PIC":r.pic_code,
       "Nama PIC":r.pic_name,"Kode Salesman":r.salesman_code,"Kode Toko":r.store_code,"Nama Toko":r.store_name,
       "Nama Pemilik":r.owner_name,"Nomor HP/WA":r.owner_phone,"Alamat":r.store_address,
-      "GPS":`https://www.google.com/maps?q=${r.latitude},${r.longitude}`,"Jenis Store":r.store_type,
+      "GPS":r.google_maps_url || (r.latitude != null && r.longitude != null ? `https://www.google.com/maps?q=${r.latitude},${r.longitude}` : ""),"Jenis Store":r.store_type,
       "Chiller":r.has_chiller?"YA":"TIDAK","Status":r.branding_status,"Alasan":r.not_brandable_reason??""
     })));
     const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,sheet,"Laporan");XLSX.writeFile(book,"Laporan_Branding_Ops.xlsx");
@@ -206,7 +206,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
       <div className="overflow-x-auto"><table className="min-w-[1250px] w-full text-sm"><thead className="bg-[#F5F9FF]"><tr>{["Tanggal","Branch","Stockpoint","ID PIC","PIC","Kode Salesman","Kode Toko","Nama Toko","Pemilik","HP/WA","GPS","Jenis","Chiller","Branding","Status Pekerjaan","Foto","Aksi"].map(h=><th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500">{h}</th>)}</tr></thead>
       <tbody>{visibleRows.length?visibleRows.map(r=><tr key={r.id} className="border-t border-slate-100">
         <td className="px-4 py-3">{r.installation_date}</td><td className="px-4 py-3">{r.branch_name}</td><td className="px-4 py-3">{r.stockpoint_name}</td><td className="px-4 py-3">{r.pic_code}</td><td className="px-4 py-3">{r.pic_name}</td><td className="px-4 py-3">{r.salesman_code}</td><td className="px-4 py-3">{r.store_code}</td><td className="px-4 py-3 font-semibold text-[#0B1D3A]">{r.store_name}</td><td className="px-4 py-3">{r.owner_name}</td><td className="px-4 py-3">{r.owner_phone}</td>
-        <td className="px-4 py-3"><a className="inline-flex items-center gap-1 font-semibold text-[#1565EF]" target="_blank" href={`https://www.google.com/maps?q=${r.latitude},${r.longitude}`}><MapPin size={15}/>Maps</a></td>
+        <td className="px-4 py-3">{(r.google_maps_url || (r.latitude != null && r.longitude != null)) ? <a className="inline-flex items-center gap-1 font-semibold text-[#1565EF]" target="_blank" rel="noreferrer" href={r.google_maps_url || `https://www.google.com/maps?q=${r.latitude},${r.longitude}`}><MapPin size={15}/>Maps</a> : <span className="text-slate-400">—</span>}</td>
         <td className="px-4 py-3">{r.store_type}</td><td className="px-4 py-3">{r.has_chiller?"YA":"TIDAK"}</td><td className="px-4 py-3">{r.branding_status}</td>
         <td className="px-4 py-3">
           <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${r.workflow_status==="done"?"bg-emerald-50 text-emerald-700":r.reopened_at?"bg-sky-50 text-sky-700":"bg-amber-50 text-amber-700"}`}>

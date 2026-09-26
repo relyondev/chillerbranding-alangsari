@@ -49,9 +49,6 @@ export default function Topbar({ title }: { title: string }) {
         <h1 className="text-lg font-semibold text-[#0B1D3A] sm:text-xl">
           {title}
         </h1>
-        <p className="hidden text-xs text-slate-400 sm:block">
-          Sistem Operasional Branding Warung
-        </p>
       </div>
 
       <div ref={wrapperRef} className="relative">

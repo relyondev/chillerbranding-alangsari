@@ -40,6 +40,7 @@ export async function createDraft(input: SubmissionDraftInput) {
     p_latitude: input.latitude,
     p_longitude: input.longitude,
     p_location_accuracy_meters: input.accuracyMeters,
+    p_google_maps_url: input.googleMapsUrl,
     p_store_type: input.storeType,
     p_has_chiller: input.hasChiller,
     p_branding_status: input.brandingStatus,
