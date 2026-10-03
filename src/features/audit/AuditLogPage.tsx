@@ -101,7 +101,7 @@ export default function AuditLogPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Cari event, user, entity..."
-            className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[#1565EF]"
+            className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--role-accent)]"
           />
         </label>
       </div>
@@ -109,7 +109,7 @@ export default function AuditLogPage() {
       <div className="brand-card mt-5 overflow-hidden rounded-2xl">
         <div className="hidden md:block">
           <table className="min-w-full text-sm">
-            <thead className="bg-[#F5F9FF]">
+            <thead className="bg-[var(--role-pale)]">
               <tr>
                 {["Waktu","Aksi","User","Entity","ID Entity","Detail"].map((h)=>(
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500">
@@ -154,9 +154,9 @@ export default function AuditLogPage() {
         <div className="space-y-3 p-3 md:hidden">
           {filtered.length ? filtered.map((row)=>(
             <article key={row.id} className="mobile-data-card rounded-2xl border border-slate-200 bg-white p-4">
-              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{prettyEvent(row.event_type)}</p><p className="mt-1 text-xs text-slate-500">{new Date(row.created_at).toLocaleString("id-ID")}</p></div><span className="rounded-full bg-[#EEF6FF] px-2.5 py-1 text-[10px] font-semibold text-[#1565EF]">{prettyEvent(row.entity_type)}</span></div>
+              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{prettyEvent(row.event_type)}</p><p className="mt-1 text-xs text-slate-500">{new Date(row.created_at).toLocaleString("id-ID")}</p></div><span className="rounded-full bg-[var(--role-pale)] px-2.5 py-1 text-[10px] font-semibold text-[var(--role-accent)]">{prettyEvent(row.entity_type)}</span></div>
               <dl className="mt-4 grid gap-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">User</dt><dd className="mt-1">{row.actor_name}</dd></div><div><dt className="mobile-label text-xs text-slate-400">ID Entity</dt><dd className="mt-1 break-all text-xs">{row.entity_id ?? "-"}</dd></div></dl>
-              {row.after_data && <details className="mt-4"><summary className="cursor-pointer text-xs font-semibold text-[#1565EF]">Lihat detail</summary><pre className="mt-2 whitespace-pre-wrap break-words rounded-xl bg-[#F5F9FF] p-3 font-sans text-xs leading-5 text-slate-500">{JSON.stringify(row.after_data,null,2)}</pre></details>}
+              {row.after_data && <details className="mt-4"><summary className="cursor-pointer text-xs font-semibold text-[var(--role-accent)]">Lihat detail</summary><pre className="mt-2 whitespace-pre-wrap break-words rounded-xl bg-[var(--role-pale)] p-3 font-sans text-xs leading-5 text-slate-500">{JSON.stringify(row.after_data,null,2)}</pre></details>}
             </article>
           )) : <div className="py-10 text-center text-sm text-slate-400">{loading?"Memuat audit log...":"Belum ada audit event yang dapat ditampilkan."}</div>}
         </div>

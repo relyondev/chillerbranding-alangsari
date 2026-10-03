@@ -27,7 +27,7 @@ export default function ToastHost() {
     <div className="pointer-events-none fixed right-4 top-4 z-[9999] flex w-[min(92vw,380px)] flex-col gap-3">
       {toasts.map((toast) => {
         const Icon = iconMap[toast.type];
-        const tone = toast.type==="success" ? "text-emerald-500" : toast.type==="error" ? "text-red-500" : toast.type==="warning" ? "text-amber-500" : "text-[#1565EF]";
+        const tone = toast.type==="success" ? "text-emerald-500" : toast.type==="error" ? "text-red-500" : toast.type==="warning" ? "text-amber-500" : "text-[var(--role-accent)]";
         return (
           <div key={toast.id} className="pointer-events-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,42,82,.18)]">
             <div className="flex items-start gap-3">

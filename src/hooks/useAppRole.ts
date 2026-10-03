@@ -6,6 +6,7 @@ export type AppRole = "super_admin" | "admin" | "pic" | "client";
 export function useAppRole() {
   const [role, setRole] = useState<AppRole | null>(null);
   const [fullName, setFullName] = useState("Memuat...");
+  const [picCode, setPicCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -14,10 +15,7 @@ export function useAppRole() {
     (async () => {
       try {
         const supabase = getSupabaseClient();
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
         const { data: profile, error } = await supabase
@@ -28,19 +26,31 @@ export function useAppRole() {
 
         if (error || !profile?.is_active) return;
 
+        let resolvedPicCode: string | null = null;
+        if (profile.role === "pic") {
+          const { data: pic } = await supabase
+            .from("pic_profiles")
+            .select("pic_code")
+            .eq("user_id", user.id)
+            .maybeSingle();
+          resolvedPicCode = pic?.pic_code ?? null;
+        }
+
         if (!cancelled) {
-          setRole(profile.role as AppRole);
+          const resolvedRole = profile.role as AppRole;
+          setRole(resolvedRole);
           setFullName(profile.full_name || user.email || "User");
+          setPicCode(resolvedPicCode);
+          document.documentElement.dataset.role = resolvedRole;
+          try { localStorage.setItem("branding-ops-role", resolvedRole); } catch {}
         }
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
 
-    return () => {
-      cancelled = true;
-    };
+    return () => { cancelled = true; };
   }, []);
 
-  return { role, fullName, loading };
+  return { role, fullName, picCode, loading };
 }

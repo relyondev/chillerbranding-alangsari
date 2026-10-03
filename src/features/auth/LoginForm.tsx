@@ -34,6 +34,8 @@ export default function LoginForm() {
         throw new Error("Akun tidak aktif atau profile tidak ditemukan.");
       }
 
+      try { localStorage.setItem("branding-ops-role", profile.role); } catch {}
+
       window.location.href =
         profile.role === "pic"
           ? "/app/submissions"
@@ -52,7 +54,7 @@ export default function LoginForm() {
         <label htmlFor="email" className="block text-[16px] font-semibold text-[#0B1D3A]">Email</label>
         <div className="relative mt-3">
           <Mail size={21} className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9AAAC0]" />
-          <input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="nama@email.com" autoComplete="email" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-5 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#1565EF] focus:bg-white focus:ring-4 focus:ring-[#BEE6FF]/55" />
+          <input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="nama@email.com" autoComplete="email" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-5 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#d71920] focus:bg-white focus:ring-4 focus:ring-[#ffd1d3]/55" />
         </div>
       </div>
 
@@ -60,16 +62,16 @@ export default function LoginForm() {
         <label htmlFor="password" className="block text-[16px] font-semibold text-[#0B1D3A]">Password</label>
         <div className="relative mt-3">
           <LockKeyhole size={21} className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9AAAC0]" />
-          <input id="password" type={show ? "text" : "password"} value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Masukkan password" autoComplete="current-password" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-14 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#1565EF] focus:bg-white focus:ring-4 focus:ring-[#BEE6FF]/55" />
-          <button type="button" onClick={()=>setShow(v=>!v)} className="absolute inset-y-0 right-0 flex w-14 items-center justify-center text-[#9AAAC0] transition hover:text-[#1565EF]" aria-label={show ? "Sembunyikan password" : "Tampilkan password"}>
+          <input id="password" type={show ? "text" : "password"} value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="Masukkan password" autoComplete="current-password" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-14 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#d71920] focus:bg-white focus:ring-4 focus:ring-[#ffd1d3]/55" />
+          <button type="button" onClick={()=>setShow(v=>!v)} className="absolute inset-y-0 right-0 flex w-14 items-center justify-center text-[#9AAAC0] transition hover:text-[#d71920]" aria-label={show ? "Sembunyikan password" : "Tampilkan password"}>
             {show ? <EyeOff size={22} /> : <Eye size={22} />}
           </button>
         </div>
-        <div className="mt-5 flex justify-end"><a href="/forgot-password" className="text-[15px] font-semibold text-[#1565EF] hover:text-[#0B1D3A]">Lupa password?</a></div>
+        <div className="mt-5 flex justify-end"><a href="/forgot-password" className="text-[15px] font-semibold text-[#d71920] hover:text-[#0B1D3A]">Lupa password?</a></div>
       </div>
 
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-      <button disabled={loading} className="h-[62px] w-full rounded-2xl bg-[linear-gradient(90deg,#1565EF_0%,#4B5FF0_100%)] text-[18px] font-semibold text-white shadow-[0_14px_28px_rgba(21,101,239,.20)] disabled:opacity-60">
+      <button disabled={loading} className="h-[62px] w-full rounded-2xl bg-[linear-gradient(90deg,#d71920_0%,#8f0f14_100%)] text-[18px] font-semibold text-white shadow-[0_14px_28px_rgba(21,101,239,.20)] disabled:opacity-60">
         {loading ? "Memproses..." : "Masuk ke Sistem"}
       </button>
     </form>

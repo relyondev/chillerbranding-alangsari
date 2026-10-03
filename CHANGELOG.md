@@ -1,3 +1,27 @@
+# Changelog
+## 1.3.2 - Role Dark Contrast Polish
+- Dark mode surfaces now follow each role palette instead of inheriting the old navy base.
+- PIC dark mode uses deep red/maroon surfaces with red accents.
+- Admin/Super Admin dark mode uses neutral black/charcoal surfaces.
+- Client dark mode keeps the existing blue family.
+- Reset Password actions are styled as primary role-colored buttons.
+
+
+## 1.3.0 — Frontend Branding Chiller
+- Rebrand user-facing application to Branding Chiller.
+- Add HM Hanzi Management login branding.
+- Add role-based color themes with light default and dark variants.
+- Add Stockpoint-driven code autofill UI and new Salesman suffix format UI.
+- Add Chiller=no automatic non-brandable UX.
+- Add map preview after geolocation success.
+- Show PIC name and PIC ID in sidebar.
+- Add Stockpoint ID to Data Pekerjaan table.
+- Add photo modal preview.
+- Split reporting actions into three buttons.
+
+## 1.2.3
+- Fix reopen DB function referencing nonexistent `submission_photos.updated_at`; now uses `external_deleted_at`.
+
 
 ## 1.2.1
 - Hotfix Data Pekerjaan desktop table: restore all columns.
@@ -69,3 +93,12 @@
 - Added explicit validation for submission ID and reopen reason.
 - Reopen Drive cleanup now reports per-file failures and remains safe to retry.
 - Added reopen troubleshooting documentation.
+
+## 1.3.1 - Frontend QA Polish
+- Lock Input Branding fields until PIC selects a Stockpoint.
+- Render Salesman prefix `S` outside the editable textbox.
+- Persist role theme across page navigation to prevent accent-color flash.
+- Reduce Hanzi Management logo size on login.
+- Sidebar identity now uses labeled Nama / Kode PIC / Role fields.
+- Add Hanzi Management logo space in the authenticated sidebar and footer.
+- Photo viewer adds Back, previous/next arrows, keyboard navigation, and thumbnail navigation.

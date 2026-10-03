@@ -101,7 +101,7 @@ function StockpointPicker({
             {selectedRows.map((sp) => (
               <span
                 key={sp.id}
-                className="inline-flex max-w-full items-center gap-2 rounded-full bg-[#EEF6FF] px-3 py-1.5 text-xs font-semibold text-[#1565EF]"
+                className="inline-flex max-w-full items-center gap-2 rounded-full bg-[var(--role-pale)] px-3 py-1.5 text-xs font-semibold text-[var(--role-accent)]"
               >
                 <span className="truncate">
                   {sp.code} · {sp.name}
@@ -158,7 +158,7 @@ function StockpointPicker({
                   setQuery(event.target.value)
                 }
                 placeholder="Cari kode atau nama stockpoint..."
-                className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[#1565EF] focus:ring-4 focus:ring-[#BEE6FF]/45"
+                className="w-full rounded-xl border border-slate-200 py-2.5 pl-9 pr-3 text-sm outline-none focus:border-[var(--role-accent)] focus:ring-4 focus:ring-[var(--role-border)]"
               />
             </div>
           </div>
@@ -182,13 +182,13 @@ function StockpointPicker({
                     className={`flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left transition ${
                       occupied
                         ? "cursor-not-allowed bg-slate-50 opacity-55"
-                        : "hover:bg-[#F5F9FF]"
+                        : "hover:bg-[var(--role-pale)]"
                     }`}
                   >
                     <span
                       className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${
                         checked
-                          ? "border-[#1565EF] bg-[#1565EF] text-white"
+                          ? "border-[var(--role-accent)] bg-[var(--role-accent)] text-white"
                           : "border-slate-300 bg-white"
                       }`}
                     >
@@ -196,7 +196,7 @@ function StockpointPicker({
                     </span>
 
                     <span className="min-w-0 flex-1">
-                      <span className="block text-xs font-semibold text-[#1565EF]">
+                      <span className="block text-xs font-semibold text-[var(--role-accent)]">
                         {sp.code}
                       </span>
 
@@ -486,7 +486,7 @@ async function submitPasswordReset(event: React.FormEvent) {
 
         <button
           onClick={() => setOpen(true)}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#1565EF] px-4 py-2.5 text-sm font-semibold text-white"
+          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white"
         >
           <UserPlus size={17} />
           Tambah User
@@ -499,7 +499,7 @@ async function submitPasswordReset(event: React.FormEvent) {
             value={userSearch}
             onChange={(e)=>{setUserSearch(e.target.value);setPage(1);}}
             placeholder="Cari nama, email, ID PIC..."
-            className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[#1565EF]"
+            className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[var(--role-accent)]"
           />
           <select
             value={userRoleFilter}
@@ -513,14 +513,14 @@ async function submitPasswordReset(event: React.FormEvent) {
             <option value="client">Klien</option>
           </select>
           <button type="button" onClick={()=>{setUserSearch("");setUserRoleFilter("");}} className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">Reset</button>
-          <button type="button" onClick={load} className="rounded-xl border border-[#BEE6FF] px-4 py-3 text-sm font-semibold text-[#1565EF]">Perbarui</button>
+          <button type="button" onClick={load} className="rounded-xl border border-[var(--role-border)] px-4 py-3 text-sm font-semibold text-[var(--role-accent)]">Perbarui</button>
         </div>
       </div>
 
       <div className="brand-card mt-6 overflow-hidden rounded-2xl">
         <div className="hidden md:block">
           <table className="min-w-full text-sm">
-            <thead className="bg-[#F5F9FF]">
+            <thead className="bg-[var(--role-pale)]">
               <tr>
                 {[
                   ["Nama","full_name"],
@@ -530,7 +530,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   ["Status","is_active"],
                 ].map(([label,key]) => (
                   <th key={key} className="px-5 py-3 text-left text-xs font-semibold text-slate-500">
-                    <button type="button" onClick={()=>toggleSort(key)} className="inline-flex items-center gap-1.5 hover:text-[#1565EF]">{label}<SortIcon column={key}/></button>
+                    <button type="button" onClick={()=>toggleSort(key)} className="inline-flex items-center gap-1.5 hover:text-[var(--role-accent)]">{label}<SortIcon column={key}/></button>
                   </th>
                 ))}
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500">Aksi</th>
@@ -563,7 +563,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                     <td className="px-5 py-3">{r.is_active ? "Aktif" : "Nonaktif"}</td>
                     <td className="px-5 py-3">
                       {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && (
-                        <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex items-center gap-1.5 rounded-lg border border-[#BEE6FF] px-3 py-2 text-xs font-semibold text-[#1565EF]">
+                        <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--role-accent)] px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]">
                           <KeyRound size={14}/> Reset Password
                         </button>
                       )}
@@ -586,9 +586,9 @@ async function submitPasswordReset(event: React.FormEvent) {
         <div className="space-y-3 p-3 md:hidden">
           {pagedRows.length ? pagedRows.map((r)=>(
             <article key={r.id} className="mobile-data-card rounded-2xl border border-slate-200 bg-white p-4">
-              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{r.full_name}</p><p className="mt-1 break-all text-xs text-slate-500">{r.email}</p></div><span className="rounded-full bg-[#EEF6FF] px-2.5 py-1 text-[11px] font-semibold text-[#1565EF]">{r.role}</span></div>
+              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{r.full_name}</p><p className="mt-1 break-all text-xs text-slate-500">{r.email}</p></div><span className="rounded-full bg-[var(--role-pale)] px-2.5 py-1 text-[11px] font-semibold text-[var(--role-accent)]">{r.role}</span></div>
               <dl className="mt-4 grid grid-cols-2 gap-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">ID PIC</dt><dd className="mt-1 font-medium">{r.pic_profiles?.pic_code ?? "—"}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Status</dt><dd className="mt-1 font-medium">{r.is_active?"Aktif":"Nonaktif"}</dd></div></dl>
-              {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#BEE6FF] px-3 py-2.5 text-sm font-semibold text-[#1565EF]"><KeyRound size={15}/>Reset Password</button>}
+              {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--role-accent)] px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]"><KeyRound size={15}/>Reset Password</button>}
             </article>
           )) : <div className="py-10 text-center text-sm text-slate-400">Belum ada data user.</div>}
         </div>
@@ -645,7 +645,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   name="full_name"
                   required
                   placeholder="Nama lengkap"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 />
               </label>
 
@@ -656,7 +656,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   required
                   type="email"
                   placeholder="nama@email.com"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 />
               </label>
 
@@ -665,7 +665,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                 <input
                   name="phone"
                   placeholder="08xxxxxxxxxx"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 />
               </label>
 
@@ -676,7 +676,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   onChange={(event) =>
                     setRole(event.target.value)
                   }
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 >
                   <option value="pic">PIC</option>
                   <option value="client">Klien</option>
@@ -694,7 +694,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   minLength={8}
                   autoComplete="new-password"
                   placeholder="Minimal 8 karakter"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 />
               </label>
 
@@ -707,7 +707,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   minLength={8}
                   autoComplete="new-password"
                   placeholder="Ulangi password awal"
-                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                  className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                 />
               </label>
             </div>
@@ -733,7 +733,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                       setBranchId(event.target.value)
                     }
                     required
-                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal outline-none focus:border-[#1565EF]"
+                    className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"
                   >
                     <option value="">
                       Pilih Branch
@@ -755,7 +755,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                     onChange={setSelectedStockpoints}
                   />
                 ) : (
-                  <div className="rounded-xl border border-dashed border-[#BEE6FF] bg-white p-5 text-center text-sm text-slate-400">
+                  <div className="rounded-xl border border-dashed border-[var(--role-border)] bg-white p-5 text-center text-sm text-slate-400">
                     Pilih Branch terlebih dahulu untuk
                     menampilkan Stockpoint.
                   </div>
@@ -777,7 +777,7 @@ async function submitPasswordReset(event: React.FormEvent) {
 
               <button
                 disabled={saving}
-                className="rounded-xl bg-[#1565EF] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
+                className="rounded-xl bg-[var(--role-accent)] px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-50"
               >
                 {saving
                   ? "Memproses..."
@@ -794,7 +794,7 @@ async function submitPasswordReset(event: React.FormEvent) {
             <div className="flex items-start justify-between gap-4"><div><h3 className="text-lg font-bold text-[#0B1D3A]">Reset Password</h3><p className="mt-1 text-sm text-slate-500">{resetTarget.full_name} · {resetTarget.email}</p></div><button type="button" onClick={()=>setResetTarget(null)} className="rounded-xl border border-slate-200 p-2 text-slate-500"><X size={17}/></button></div>
             <div className="mt-5 space-y-4"><label className="block text-sm font-semibold text-slate-600">Password Baru<input autoFocus type="password" minLength={8} value={resetPassword} onChange={e=>setResetPassword(e.target.value)} placeholder="Minimal 8 karakter" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal"/></label><label className="block text-sm font-semibold text-slate-600">Konfirmasi Password<input type="password" minLength={8} value={resetPasswordConfirm} onChange={e=>setResetPasswordConfirm(e.target.value)} placeholder="Ulangi password baru" className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal"/></label></div>
             <p className="mt-4 text-xs leading-5 text-slate-400">Password tidak disimpan ke database maupun Audit Log.</p>
-            <div className="mt-6 flex justify-end gap-2"><button type="button" onClick={()=>setResetTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button><button disabled={resettingPassword} className="rounded-xl bg-[#1565EF] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{resettingPassword?"Memproses...":"Simpan Password Baru"}</button></div>
+            <div className="mt-6 flex justify-end gap-2"><button type="button" onClick={()=>setResetTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button><button disabled={resettingPassword} className="rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{resettingPassword?"Memproses...":"Simpan Password Baru"}</button></div>
           </form>
         </div>
       )}

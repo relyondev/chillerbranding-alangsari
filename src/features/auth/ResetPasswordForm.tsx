@@ -24,7 +24,7 @@ export default function ResetPasswordForm() {
       <input type="password" required value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder="Ulangi password baru" className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm" />
       {message && <p className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">{message}</p>}
       {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{error}</p>}
-      <button className="w-full rounded-xl bg-[#1565EF] px-4 py-3 text-sm font-semibold text-white">Simpan Password Baru</button>
+      <button className="w-full rounded-xl bg-[var(--role-accent)] px-4 py-3 text-sm font-semibold text-white">Simpan Password Baru</button>
     </form>
   );
 }

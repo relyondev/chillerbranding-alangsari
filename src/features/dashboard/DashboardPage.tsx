@@ -105,48 +105,48 @@ export default function DashboardPage() {
     ? [
         ["Total Pekerjaan Saya", summary.total, BriefcaseBusiness, "#0B1D3A"],
         ["Draft Saya", summary.drafts, FileClock, "#FFC107"],
-        ["Pekerjaan Selesai", summary.total-summary.drafts, CheckCircle2, "#1565EF"],
-        ["Stockpoint Saya", summary.stockpoints, Store, "#4DB6FF"],
+        ["Pekerjaan Selesai", summary.total-summary.drafts, CheckCircle2, "var(--role-accent)"],
+        ["Stockpoint Saya", summary.stockpoints, Store, "var(--role-soft)"],
       ]
     : role === "client"
     ? [
         ["Total Pekerjaan", summary.total, Database, "#0B1D3A"],
-        ["Bisa Dibranding", summary.brandable, CheckCircle2, "#1565EF"],
-        ["Tidak Bisa Dibranding", summary.not_brandable, CircleX, "#4DB6FF"],
+        ["Bisa Dibranding", summary.brandable, CheckCircle2, "var(--role-accent)"],
+        ["Tidak Bisa Dibranding", summary.not_brandable, CircleX, "var(--role-soft)"],
         ["Total Stockpoint", summary.stockpoints, Store, "#FFC107"],
       ]
     : [
         ["Total Pekerjaan", summary.total, Database, "#0B1D3A"],
-        ["Bisa Dibranding", summary.brandable, CheckCircle2, "#1565EF"],
-        ["Tidak Bisa Dibranding", summary.not_brandable, CircleX, "#4DB6FF"],
+        ["Bisa Dibranding", summary.brandable, CheckCircle2, "var(--role-accent)"],
+        ["Tidak Bisa Dibranding", summary.not_brandable, CircleX, "var(--role-soft)"],
         ["PIC Aktif", summary.pic_active, UsersRound, "#FFC107"],
       ];
 
   const branchData = useMemo(()=>({
     labels: (summary.branch_counts ?? []).map(x=>x.label),
-    datasets: [{ label: role==="pic" ? "Pekerjaan per Stockpoint" : "Pekerjaan per Branch", data: (summary.branch_counts ?? []).map(x=>x.value), backgroundColor: "#1565EF" }]
+    datasets: [{ label: role==="pic" ? "Pekerjaan per Stockpoint" : "Pekerjaan per Branch", data: (summary.branch_counts ?? []).map(x=>x.value), backgroundColor: "var(--role-accent)" }]
   }),[summary,role]);
 
   const statusData = {
     labels:["Bisa Dibranding","Tidak Bisa Dibranding"],
-    datasets:[{data:[summary.brandable,summary.not_brandable],backgroundColor:["#1565EF","#FFC107"],borderWidth:0}]
+    datasets:[{data:[summary.brandable,summary.not_brandable],backgroundColor:["var(--role-accent)","#FFC107"],borderWidth:0}]
   };
   const trendData = {
     labels: (summary.trend ?? []).map(x=>x.label),
-    datasets:[{label:"Pekerjaan",data:(summary.trend ?? []).map(x=>x.value),borderColor:"#1565EF",backgroundColor:"#BEE6FF",tension:.35}]
+    datasets:[{label:"Pekerjaan",data:(summary.trend ?? []).map(x=>x.value),borderColor:"var(--role-accent)",backgroundColor:"var(--role-border)",tension:.35}]
   };
 
   return <section>
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-      <div><h2 className="text-2xl font-bold text-[#0B1D3A]">Dashboard</h2><p className="mt-1 text-sm text-slate-500">{role==="pic"?"Hanya menampilkan pekerjaan dan Stockpoint yang menjadi assignment Anda.":"Ringkasan operasional branding warung."}</p></div>
-      <button onClick={load} className="inline-flex items-center gap-2 rounded-xl border border-[#BEE6FF] bg-white px-4 py-2.5 text-sm font-semibold text-[#1565EF]"><RefreshCw size={16} className={loading?"animate-spin":""}/>Perbarui</button>
+      <div><h2 className="text-2xl font-bold text-[#0B1D3A]">Dashboard</h2><p className="mt-1 text-sm text-slate-500">{role==="pic"?"Hanya menampilkan pekerjaan dan Stockpoint yang menjadi assignment Anda.":"Ringkasan operasional Branding Chiller."}</p></div>
+      <button onClick={load} className="inline-flex items-center gap-2 rounded-xl border border-[var(--role-border)] bg-white px-4 py-2.5 text-sm font-semibold text-[var(--role-accent)]"><RefreshCw size={16} className={loading?"animate-spin":""}/>Perbarui</button>
     </div>
     
     <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(([l,v,i,a]:any)=><Card key={l} label={l} value={v} icon={i} accent={a}/>)}</div>
 
     <div className="mt-6 grid gap-6 xl:grid-cols-2">
       <section className="brand-card rounded-2xl p-6">
-        <div className="mb-5 flex items-center gap-2"><BarChart3 size={19} className="text-[#1565EF]"/><h3 className="font-semibold text-[#0B1D3A]">{role==="pic"?"Pekerjaan per Stockpoint":"Pekerjaan per Branch"}</h3></div>
+        <div className="mb-5 flex items-center gap-2"><BarChart3 size={19} className="text-[var(--role-accent)]"/><h3 className="font-semibold text-[#0B1D3A]">{role==="pic"?"Pekerjaan per Stockpoint":"Pekerjaan per Branch"}</h3></div>
         <div className="h-72"><Bar data={branchData} options={{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}/></div>
       </section>
       <section className="brand-card rounded-2xl p-6">
@@ -162,11 +162,11 @@ export default function DashboardPage() {
 
     <div className="mt-6 grid gap-5 xl:grid-cols-2">
         <RecentSplitSection
-          title="Warung / Toko Bisa Dibranding"
+          title="Toko Bisa Dibranding"
           rows={detailRows.filter((row:any)=>row.branding_status==="brandable")}
         />
         <RecentSplitSection
-          title="Warung / Toko Tidak Bisa Dibranding"
+          title="Toko Tidak Bisa Dibranding"
           rows={detailRows.filter((row:any)=>row.branding_status==="not_brandable")}
         />
       </div>

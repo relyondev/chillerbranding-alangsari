@@ -185,7 +185,7 @@ export default function PhotoUploader({
         >
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
-              <span className="rounded-xl bg-[#EEF6FF] p-3 text-[#1565EF]">
+              <span className="rounded-xl bg-[var(--role-pale)] p-3 text-[var(--role-accent)]">
                 <Camera size={19} />
               </span>
 
@@ -210,7 +210,7 @@ export default function PhotoUploader({
               />
             ) : busy[type] ? (
               <RefreshCw
-                className="shrink-0 animate-spin text-[#1565EF]"
+                className="shrink-0 animate-spin text-[var(--role-accent)]"
                 size={20}
               />
             ) : (

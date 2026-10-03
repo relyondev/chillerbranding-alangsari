@@ -1,4 +1,4 @@
 ---
 interface Props{title:string;description:string}const{title,description}=Astro.props;
 ---
-<section class="brand-card rounded-3xl p-8"><div class="max-w-2xl"><div class="mb-5 h-2 w-14 rounded-full bg-[#1565EF]"></div><h2 class="text-2xl font-bold text-[#0B1D3A]">{title}</h2><p class="mt-2 text-sm leading-6 text-slate-500">{description}</p><div class="mt-8 rounded-2xl border border-dashed border-[#BEE6FF] bg-[#F5F9FF] p-8 text-center text-sm text-slate-400">Modul akan diaktifkan pada phase implementasi terkait.</div></div></section>
+<section class="brand-card rounded-3xl p-8"><div class="max-w-2xl"><div class="mb-5 h-2 w-14 rounded-full bg-[var(--role-accent)]"></div><h2 class="text-2xl font-bold text-[#0B1D3A]">{title}</h2><p class="mt-2 text-sm leading-6 text-slate-500">{description}</p><div class="mt-8 rounded-2xl border border-dashed border-[var(--role-border)] bg-[var(--role-pale)] p-8 text-center text-sm text-slate-400">Modul akan diaktifkan pada phase implementasi terkait.</div></div></section>

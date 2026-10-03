@@ -7,11 +7,11 @@ export default function UserManagementPlaceholder() {
             <h3 className="font-semibold text-[#0B1D3A]">User & PIC Management</h3>
             <p className="mt-1 text-sm text-slate-500">Foundation untuk Super Admin/Admin.</p>
           </div>
-          <button className="rounded-xl bg-[#1565EF] px-4 py-3 text-sm font-semibold text-white">Tambah User</button>
+          <button className="rounded-xl bg-[var(--role-accent)] px-4 py-3 text-sm font-semibold text-white">Tambah User</button>
         </div>
         <div className="mt-6 overflow-x-auto">
           <table className="min-w-full">
-            <thead className="bg-[#F5F9FF]">
+            <thead className="bg-[var(--role-pale)]">
               <tr>
                 {["Nama","Email","Role","ID PIC","Branch","Stockpoint","Status","Aksi"].map((h) => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-slate-500">{h}</th>

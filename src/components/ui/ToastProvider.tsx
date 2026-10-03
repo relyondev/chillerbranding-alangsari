@@ -30,7 +30,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           const tone =
             toast.type === "success" ? "text-emerald-500" :
             toast.type === "error" ? "text-red-500" :
-            toast.type === "warning" ? "text-amber-500" : "text-[#1565EF]";
+            toast.type === "warning" ? "text-amber-500" : "text-[var(--role-accent)]";
 
           return (
             <div key={toast.id} className="pointer-events-auto rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_18px_50px_rgba(15,42,82,.18)]">

@@ -14,7 +14,7 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
 
   useEffect(() => {
     const saved = localStorage.getItem("branding-ops-theme") as Theme | null;
-    const preferred: Theme = saved ?? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const preferred: Theme = saved ?? "light";
     setTheme(preferred);
     applyTheme(preferred);
   }, []);
@@ -29,7 +29,7 @@ export default function ThemeToggle({ compact = false }: { compact?: boolean }) 
     <button
       type="button"
       onClick={toggle}
-      className={`theme-toggle inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-[#BEE6FF] hover:text-[#1565EF] ${compact ? "h-10 w-10" : "h-10 gap-2 px-3"}`}
+      className={`theme-toggle inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-[var(--role-border)] hover:text-[var(--role-accent)] ${compact ? "h-10 w-10" : "h-10 gap-2 px-3"}`}
       aria-label={theme === "dark" ? "Gunakan mode terang" : "Gunakan mode gelap"}
       title={theme === "dark" ? "Mode terang" : "Mode gelap"}
     >

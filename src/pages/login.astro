@@ -7,115 +7,57 @@ import "../styles/global.css";
 import LoginForm from "../features/auth/LoginForm";
 import ThemeToggle from "../components/ui/ThemeToggle";
 ---
-
 <!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <meta name="theme-color" content="#0B1D3A" />
+    <meta name="theme-color" content="#d71920" />
     <script is:inline>
       try {
         const saved = localStorage.getItem("branding-ops-theme");
-        const theme = saved || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const theme = saved || "light";
         document.documentElement.classList.toggle("dark", theme === "dark");
         document.documentElement.dataset.theme = theme;
       } catch {}
     </script>
-    <title>Login | Branding Ops App</title>
+    <title>Login | Branding Chiller</title>
   </head>
-
-  <body class="min-h-screen bg-[linear-gradient(180deg,#F4F8FE_0%,#ECF4FF_100%)]">
-    <main class="relative min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-      <div class="absolute right-4 top-4 z-20 sm:right-6 sm:top-6"><ThemeToggle client:load compact /></div>
-      <div class="mx-auto max-w-[1320px]">
-        <header class="mb-6 text-center sm:mb-8">
-          <h1 class="text-[26px] font-bold leading-tight tracking-[-0.03em] text-[#0B1D3A] sm:text-[38px]">
-            Sistem Operasional Branding Warung
-          </h1>
-        </header>
-
-        <section class="overflow-hidden rounded-[28px] border border-[#DCE8F7] bg-white shadow-[0_20px_55px_rgba(15,42,82,0.10)]">
-          <div class="grid lg:grid-cols-[1.05fr_0.95fr]">
-            <section class="relative overflow-hidden bg-[linear-gradient(160deg,#57B3FF_0%,#2C8BFF_34%,#1565EF_72%,#2147D9_100%)] px-6 py-8 text-white sm:px-9 sm:py-10 lg:min-h-[640px] lg:px-10 lg:py-12">
-              <div class="absolute inset-0 opacity-[0.22]" style="background-image:linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px); background-size:32px 32px;"></div>
-              <div class="absolute left-0 top-0 h-28 w-40 rounded-br-[120px] bg-white/10"></div>
-              <div class="absolute -right-12 -top-10 h-40 w-40 rounded-full border border-white/30 bg-white/10"></div>
-              <div class="absolute right-10 top-20 h-6 w-6 rounded-full border-4 border-white/30"></div>
-              <div class="absolute left-10 top-28 h-4 w-4 rounded-full border-2 border-white/40"></div>
-              <div class="absolute bottom-0 left-0 h-36 w-full bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,.18),transparent_34%),radial-gradient(circle_at_75%_20%,rgba(255,255,255,.12),transparent_28%),linear-gradient(180deg,transparent,rgba(11,29,58,.12))]"></div>
-              <div class="absolute bottom-0 left-0 right-0 h-28 bg-[linear-gradient(180deg,transparent_0%,rgba(18,58,120,.18)_100%)]"></div>
-
-              <div class="relative z-10 flex h-full flex-col justify-between gap-10">
-                <div>
-                  <div class="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl border border-white/25 bg-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.08)] backdrop-blur-sm">
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                      <path d="M14 3H6.8C5.81 3 5 3.81 5 4.8V19.2C5 20.19 5.81 21 6.8 21H14" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
-                      <path d="M14 7L18 7M18 7L15.5 4.5M18 7L15.5 9.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                      <path d="M18 17L14 17M14 17L16.5 14.5M14 17L16.5 19.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-
-                  <p class="text-sm font-semibold uppercase tracking-[0.12em] text-white/90">
-                    Sistem Operasional Branding Warung
-                  </p>
-
-                  <p class="mt-12 text-base font-medium text-white/85 sm:text-lg">
-                    Nice to see you again
-                  </p>
-
-                  <h2 class="mt-2 max-w-[520px] text-[38px] font-bold uppercase leading-[1.05] tracking-[0.04em] sm:text-[50px] lg:text-[56px]">
-                    Welcome Back
-                  </h2>
-
-                  <div class="mt-5 h-1.5 w-16 rounded-full bg-white/85"></div>
-
-                  <h3 class="mt-8 max-w-[520px] text-[28px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[40px]">
-                    Pendataan database branding warung.
-                  </h3>
-
-                  <p class="mt-5 max-w-[520px] text-[15px] leading-7 text-white/88 sm:text-[18px]">
-                    Kelola input branding, dokumentasi lapangan, progres pekerjaan, dan laporan dari satu dashboard terpusat.
-                  </p>
-                </div>
-
-                <div class="flex flex-wrap items-center gap-3 text-sm text-white/90 sm:text-base">
-                  <span class="inline-flex h-3 w-3 rounded-full bg-[#7EF7B8] shadow-[0_0_0_6px_rgba(126,247,184,.14)]"></span>
-                  <span>Akses aman sesuai peran pengguna</span>
-                </div>
-              </div>
-            </section>
-
-            <section class="flex items-center bg-white px-5 py-7 sm:px-8 sm:py-9 lg:min-h-[640px] lg:px-12 lg:py-10">
-              <div class="mx-auto w-full max-w-[460px]">
-                <p class="text-center text-[18px] font-semibold text-[#1565EF] lg:text-left">
-                  Branding dashboard
-                </p>
-
-                <h2 class="mt-4 text-center text-[34px] font-bold leading-tight tracking-[-0.03em] text-[#0B1D3A] sm:text-[42px] lg:text-left">
-                  Masuk ke sistem
-                </h2>
-
-                <p class="mt-4 text-center text-[15px] leading-7 text-slate-500 sm:text-[16px] lg:text-left">
-                  Gunakan akun yang telah didaftarkan oleh administrator untuk mengakses fitur sesuai peran.
-                </p>
-
-                <LoginForm client:load />
-
-                <p class="mt-6 text-center text-[14px] text-[#9AAAC0] lg:text-left">
-                  Akses terbatas untuk pengguna terdaftar.
-                </p>
-              </div>
-            </section>
+  <body class="min-h-screen bg-[#f6f6f6]">
+    <main class="relative min-h-screen px-4 py-5 sm:px-6 lg:px-8">
+      <div class="absolute right-4 top-4 z-30 sm:right-6 sm:top-6"><ThemeToggle client:load compact /></div>
+      <section class="mx-auto grid min-h-[calc(100vh-40px)] max-w-[1220px] overflow-hidden rounded-[30px] border border-black/10 bg-white shadow-[0_24px_70px_rgba(0,0,0,.14)] lg:grid-cols-[1.08fr_.92fr]">
+        <div class="relative overflow-hidden bg-[#0b0b0b] px-7 py-9 text-white sm:px-10 lg:px-12 lg:py-12">
+          <div class="absolute -left-24 -top-24 h-72 w-72 rounded-full bg-[#d71920]/30 blur-2xl"></div>
+          <div class="absolute -bottom-28 -right-20 h-80 w-80 rounded-full bg-[#d71920]/25 blur-3xl"></div>
+          <div class="relative z-10 flex h-full flex-col justify-between gap-12">
+            <div>
+              <img src="/hm-hanzi-logo.png" alt="HM Hanzi Management" class="h-auto w-full max-w-[270px] rounded-xl object-contain" />
+              <p class="mt-10 text-sm font-semibold uppercase tracking-[0.18em] text-[#ff696e]">Branding Chiller</p>
+              <h1 class="mt-4 max-w-[580px] text-[38px] font-bold leading-[1.05] tracking-[-0.04em] sm:text-[52px]">
+                Operasional branding yang lebih rapi, cepat, dan terukur.
+              </h1>
+              <p class="mt-6 max-w-[560px] text-[15px] leading-7 text-white/70 sm:text-[17px]">
+                Kelola input branding, dokumentasi lapangan, progres pekerjaan, dan laporan dalam satu sistem terpusat.
+              </p>
+            </div>
+            <div class="flex items-center gap-3 text-sm text-white/75">
+              <span class="h-2.5 w-2.5 rounded-full bg-[#d71920] shadow-[0_0_0_6px_rgba(215,25,32,.16)]"></span>
+              Akses aman sesuai peran pengguna
+            </div>
           </div>
-        </section>
-
-        <footer class="px-2 pb-2 pt-6 text-center text-xs text-slate-400 sm:text-sm">
-          © 2026 Sistem Operasional Branding Warung. Made with
-          <span class="font-semibold text-rose-500">♥</span>
-          by <span class="font-semibold text-[#0B1D3A]">RELYON PRODUCTION</span>.
-        </footer>
-      </div>
+        </div>
+        <div class="flex items-center px-6 py-9 sm:px-10 lg:px-14">
+          <div class="mx-auto w-full max-w-[450px]">
+            <p class="text-sm font-semibold uppercase tracking-[0.12em] text-[#d71920]">Branding Chiller</p>
+            <h2 class="mt-3 text-[34px] font-bold tracking-[-0.035em] text-[#111827] sm:text-[42px]">Masuk ke sistem</h2>
+            <p class="mt-4 text-[15px] leading-7 text-slate-500">Gunakan akun yang telah didaftarkan oleh administrator untuk mengakses fitur sesuai peran.</p>
+            <LoginForm client:load />
+            <p class="mt-6 text-center text-xs text-slate-400">Akses terbatas untuk pengguna terdaftar.</p>
+          </div>
+        </div>
+      </section>
+      <footer class="px-2 pb-2 pt-5 text-center text-xs text-slate-400">© 2026 Branding Chiller. Made with <span class="font-semibold text-[#d71920]">♥</span>&nbsp;by <span class="font-semibold text-[#111827]">RELYON PRODUCTION</span>.</footer>
     </main>
   </body>
 </html>

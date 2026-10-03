@@ -1,6 +1,6 @@
-# Sistem Operasional Branding Warung
+# Branding Chiller
 
-Production web application for Relyon Production to manage warung branding field operations from PIC input through documentation, reporting, Google Drive storage, and Google Spreadsheet synchronization.
+Production web application for Relyon Production to manage Branding Chiller field operations from PIC input through documentation, reporting, Google Drive storage, and Google Spreadsheet synchronization.
 
 ## Release
 
@@ -105,3 +105,22 @@ Admin password reset, role create restriction, dark/light theme, and mobile resp
 
 ### V1.2.1 hotfix
 Desktop Data Pekerjaan table now preserves all columns with contained horizontal scrolling.
+
+
+## V1.3.0 Frontend Rebrand
+- HM Hanzi Management visual identity on login.
+- Role color themes: PIC red, Admin/Super Admin charcoal, Client existing blue.
+- Light is the default theme; dark remains available.
+- PIC form autofills Stockpoint code segments into Store Code and Salesman ID.
+- Chiller unavailable automatically marks the work as not brandable and skips photo requirements.
+- Successful browser geolocation displays an inline map preview.
+- PIC sidebar displays PIC full name and PIC ID.
+- Data Pekerjaan shows Stockpoint ID before Stockpoint name.
+- Photo viewer supports click-to-open modal preview.
+- Reporting actions are separated into Sync Spreadsheet, Open Spreadsheet, and Export.
+
+Backend follow-up: the new Salesman suffix UI allows `S` + up to 4 digits (5 characters total). Existing database validation must be updated before using 5-character suffixes in production.
+
+
+### V1.3.1 frontend QA polish
+Stockpoint-first form lock, clearer Salesman suffix UX, stable role theming, sidebar identity labels, HM branding placement, and navigable photo modal.

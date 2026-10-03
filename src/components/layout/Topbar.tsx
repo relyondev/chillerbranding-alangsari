@@ -45,7 +45,7 @@ export default function Topbar({ title }: { title: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-[#1565EF]/10 bg-white/90 px-4 pl-16 backdrop-blur-xl sm:px-6 sm:pl-16 lg:px-8 lg:pl-8">
+    <header className="sticky top-0 z-20 flex h-20 items-center justify-between border-b border-[var(--role-accent)]/10 bg-white/90 px-4 pl-16 backdrop-blur-xl sm:px-6 sm:pl-16 lg:px-8 lg:pl-8">
       <div>
         <h1 className="text-lg font-semibold text-[#0B1D3A] sm:text-xl">
           {title}
@@ -58,7 +58,7 @@ export default function Topbar({ title }: { title: string }) {
         <button
           type="button"
           onClick={() => setOpen((value) => !value)}
-          className="flex items-center gap-3 rounded-2xl p-1.5 transition hover:bg-[#F5F9FF]"
+          className="flex items-center gap-3 rounded-2xl p-1.5 transition hover:bg-[var(--role-pale)]"
           aria-label="Buka menu profile"
           aria-expanded={open}
         >
@@ -71,7 +71,7 @@ export default function Topbar({ title }: { title: string }) {
             </p>
           </div>
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1565EF] text-white shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--role-accent)] text-white shadow-sm">
             <CircleUserRound size={21} />
           </div>
         </button>
@@ -90,7 +90,7 @@ export default function Topbar({ title }: { title: string }) {
             <div className="p-2">
               <a
                 href="/app/account"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-[#F5F9FF] hover:text-[#1565EF]"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-[var(--role-pale)] hover:text-[var(--role-accent)]"
               >
                 <UserRound size={17} />
                 Akun

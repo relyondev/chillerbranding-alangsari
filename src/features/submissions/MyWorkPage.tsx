@@ -6,7 +6,7 @@ function WorkList({title,rows,reopened=false}:{title:string;rows:any[];reopened?
   return (
     <div className="brand-card rounded-2xl p-5">
       <div className="flex items-center gap-2">
-        {reopened?<RotateCcw size={18} className="text-amber-500"/>:<FileClock size={18} className="text-[#1565EF]"/>}
+        {reopened?<RotateCcw size={18} className="text-amber-500"/>:<FileClock size={18} className="text-[var(--role-accent)]"/>}
         <h3 className="font-semibold text-[#0B1D3A]">{title}</h3>
       </div>
       <div className="mt-4 space-y-3">
@@ -18,7 +18,7 @@ function WorkList({title,rows,reopened=false}:{title:string;rows:any[];reopened?
                 <p className="mt-1 text-sm text-slate-500">{row.stockpoint_name} · {row.store_code}</p>
                 {reopened && row.reopen_reason && <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-700">Alasan reopen: {row.reopen_reason}</p>}
               </div>
-              {row.workflow_status==="draft" && <a href={`/app/submissions?draft=${row.id}`} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1565EF] px-4 py-2.5 text-sm font-semibold text-white"><PlayCircle size={16}/>Lanjutkan</a>}
+              {row.workflow_status==="draft" && <a href={`/app/submissions?draft=${row.id}`} className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white"><PlayCircle size={16}/>Lanjutkan</a>}
             </div>
           </article>
         )):<div className="py-8 text-center text-sm text-slate-400">Tidak ada data.</div>}
@@ -73,7 +73,7 @@ export default function MyWorkPage(){
         <label className="relative block">
           <Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/>
           <input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="Cari nama toko, kode toko, Stockpoint..."
-            className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[#1565EF]"/>
+            className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--role-accent)]"/>
         </label>
       </div>
 

@@ -69,7 +69,7 @@ export default function AccountPage() {
 
       <div className="brand-card mt-6 rounded-3xl p-5 sm:p-7">
         <div className="flex items-center gap-4 border-b border-slate-100 pb-5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#EEF6FF] text-[#1565EF]">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--role-pale)] text-[var(--role-accent)]">
             <UserRound size={22} />
           </div>
           <div>
@@ -112,7 +112,7 @@ export default function AccountPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-dashed border-[#BEE6FF] bg-[#F5F9FF] px-4 py-3 text-xs leading-5 text-slate-500">
+        <div className="mt-6 rounded-2xl border border-dashed border-[var(--role-border)] bg-[var(--role-pale)] px-4 py-3 text-xs leading-5 text-slate-500">
           Perubahan email dan password akan ditambahkan pada versi berikutnya.
         </div>
       </div>
