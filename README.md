@@ -124,3 +124,15 @@ Backend follow-up: the new Salesman suffix UI allows `S` + up to 4 digits (5 cha
 
 ### V1.3.1 frontend QA polish
 Stockpoint-first form lock, clearer Salesman suffix UX, stable role theming, sidebar identity labels, HM branding placement, and navigable photo modal.
+
+
+## V1.4.0
+PIC Stockpoint assignment management and backend enforcement for Stockpoint-derived Kode Toko / ID Salesman are documented in `docs/V1_4_0_ASSIGNMENT_BACKEND.md`.
+
+
+## V1.4.1
+QA update: Manajemen User dan Manajemen PIC dipisah, chained filter assignment PIC, light-mode modal fix, dan Audit Log diaktifkan. Tidak ada migration baru.
+
+### V1.4.3 QA polish
+- White chart surfaces in all themes with high-contrast chart colors.
+- Improved Audit Log modal, date range labels, and sortable headers.

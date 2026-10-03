@@ -1,3 +1,14 @@
+# V1.4.5 — Audit Assignment Human-readable Hotfix
+
+- PIC Stockpoint assignment audit events now resolve PIC identity and Stockpoint UUIDs into code + name.
+- Audit summary clearly states Stockpoints added, removed, and active after the change.
+- Assignment audit modal no longer exposes raw UUID arrays as the primary detail.
+- No database migration or Edge Function change.
+
+## 1.4.4 - Chart light surface hotfix
+- Force all chart cards to remain white in both light and dark mode.
+- Preserve high-contrast chart text, grid, legend, and fixed multicolor palette.
+
 # Changelog
 ## 1.3.2 - Role Dark Contrast Polish
 - Dark mode surfaces now follow each role palette instead of inheriting the old navy base.
@@ -102,3 +113,34 @@
 - Sidebar identity now uses labeled Nama / Kode PIC / Role fields.
 - Add Hanzi Management logo space in the authenticated sidebar and footer.
 - Photo viewer adds Back, previous/next arrows, keyboard navigation, and thumbnail navigation.
+
+## 1.4.0 — PIC Assignment & Code Rules
+- Admin/Super Admin can manage Stockpoint assignments for an existing PIC.
+- Stockpoint assignment cannot be removed after that PIC has ever created a submission on it.
+- New PIC submissions enforce Stockpoint code as the first two segments of Kode Toko and ID Salesman.
+- ID Salesman suffix is `S` + 1–4 digits; historical codes remain valid.
+- Chiller = Tidak Ada is enforced as not brandable at the backend.
+- Geolocation is truly optional; `not_provided` is accepted when GPS/manual Maps is omitted.
+- Assignment changes are written to Audit Log.
+
+## 1.4.1 — User/PIC Management QA
+- Pisahkan Manajemen User dan Manajemen PIC.
+- Manajemen User hanya menyisakan aksi Reset Password dan menampilkan waktu user dibuat; default sort terbaru.
+- Manajemen PIC menampilkan ID PIC, Nama, Branch, Stockpoint, Status, jumlah Done/Draft, dan Edit Stockpoint.
+- Filter Manajemen PIC: search, Branch, lalu Stockpoint chained dropdown.
+- Modal assignment Stockpoint memiliki search dan mempertahankan Stockpoint yang sudah punya pekerjaan di urutan atas.
+- Perbaikan warna teks modal Stockpoint pada light mode.
+- Audit Log sekarang memakai data audit_events nyata, bukan placeholder.
+
+## 1.4.2
+- Audit Log: filter user, action, date range, role badge, human-readable detail modal, pagination 20/50/100.
+- Manajemen User: colored role badges.
+- Kelola Stockpoint PIC: existing assignments prioritized and labeled; newly selected Stockpoints move to the selected group immediately.
+- Dashboard charts: role-aware/dark-mode-aware canvas colors, labels, grids, legends, and fills for better contrast.
+
+## 1.4.3 - Audit & Chart UI Polish
+- Chart cards now stay white in both light and dark mode for consistent readability.
+- Dashboard charts use a fixed high-contrast multi-color palette.
+- Audit detail modal contrast fixed for light mode and kept readable in dark mode.
+- Audit date filters now show explicit Dari tanggal / Sampai tanggal labels.
+- Audit table headers are sortable; default remains newest audit event first.

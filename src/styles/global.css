@@ -112,3 +112,13 @@ html.dark[data-role="client"] { --role-accent:#4d8fff; --role-soft:#8bc8ff; --ro
 .role-accent { color:var(--role-accent); }
 .role-bg { background:var(--role-accent); }
 .role-border { border-color:var(--role-border); }
+
+/* Charts are intentionally light surfaces in every theme. Keep this after dark-mode bg-white overrides. */
+html.dark .chart-force-light, .chart-force-light {
+  background:#ffffff !important;
+  color:#0f172a !important;
+  border-color:#dbe4ee !important;
+  box-shadow:0 8px 24px rgba(15,23,42,.08);
+}
+html.dark .chart-force-light h3, .chart-force-light h3 { color:#0f172a !important; }
+html.dark .chart-force-light .text-slate-900, .chart-force-light .text-slate-900 { color:#0f172a !important; }

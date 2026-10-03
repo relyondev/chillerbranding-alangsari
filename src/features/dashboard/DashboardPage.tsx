@@ -20,6 +20,20 @@ type Summary = {
 
 const empty: Summary = { total:0, brandable:0, not_brandable:0, drafts:0, pic_active:0, stockpoints:0, branch_counts:[], trend:[], recent:[] };
 
+function useChartPalette(){
+  // Chart cards intentionally stay white in both light and dark mode.
+  // Use a fixed high-contrast dashboard palette rather than role/dark surface colors.
+  return {
+    accent:"#2563EB",
+    accent2:"#F59E0B",
+    accent3:"#EF4444",
+    accent4:"#10B981",
+    text:"#475569",
+    grid:"rgba(148,163,184,.28)",
+    surface:"rgba(37,99,235,.12)",
+  };
+}
+
 function Card({ label, value, icon: Icon, accent }: any) {
   return <article className="brand-card rounded-2xl p-5">
     <div className="flex items-start justify-between">
@@ -62,6 +76,7 @@ function RecentSplitSection({title,rows}:{title:string;rows:any[]}) {
 
 export default function DashboardPage() {
   const { role, loading: roleLoading } = useAppRole();
+  const chartPalette=useChartPalette();
   const [summary, setSummary] = useState<Summary>(empty);
   const [loading, setLoading] = useState(false);
   const [detailRows,setDetailRows] = useState<any[]>([]);
@@ -124,17 +139,23 @@ export default function DashboardPage() {
 
   const branchData = useMemo(()=>({
     labels: (summary.branch_counts ?? []).map(x=>x.label),
-    datasets: [{ label: role==="pic" ? "Pekerjaan per Stockpoint" : "Pekerjaan per Branch", data: (summary.branch_counts ?? []).map(x=>x.value), backgroundColor: "var(--role-accent)" }]
-  }),[summary,role]);
+    datasets: [{ label: role==="pic" ? "Pekerjaan per Stockpoint" : "Pekerjaan per Branch", data: (summary.branch_counts ?? []).map(x=>x.value), backgroundColor: (summary.branch_counts ?? []).map((_,i)=>[chartPalette.accent,chartPalette.accent3,chartPalette.accent4,chartPalette.accent2][i%4]), borderRadius:6 }]
+  }),[summary,role,chartPalette]);
 
-  const statusData = {
+  const statusData = useMemo(()=>({
     labels:["Bisa Dibranding","Tidak Bisa Dibranding"],
-    datasets:[{data:[summary.brandable,summary.not_brandable],backgroundColor:["var(--role-accent)","#FFC107"],borderWidth:0}]
-  };
-  const trendData = {
+    datasets:[{data:[summary.brandable,summary.not_brandable],backgroundColor:[chartPalette.accent,chartPalette.accent2],borderColor:["#FFFFFF","#FFFFFF"],borderWidth:1}]
+  }),[summary,chartPalette]);
+  const trendData = useMemo(()=>({
     labels: (summary.trend ?? []).map(x=>x.label),
-    datasets:[{label:"Pekerjaan",data:(summary.trend ?? []).map(x=>x.value),borderColor:"var(--role-accent)",backgroundColor:"var(--role-border)",tension:.35}]
-  };
+    datasets:[{label:"Pekerjaan",data:(summary.trend ?? []).map(x=>x.value),borderColor:chartPalette.accent,backgroundColor:chartPalette.surface,pointBackgroundColor:chartPalette.accent,pointBorderColor:chartPalette.accent,tension:.35,fill:true}]
+  }),[summary,chartPalette]);
+  const chartOptions:any=useMemo(()=>({
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{labels:{color:chartPalette.text,usePointStyle:true,boxWidth:10}},tooltip:{titleColor:"#fff",bodyColor:"#fff"}},
+    scales:{x:{ticks:{color:chartPalette.text},grid:{color:chartPalette.grid}},y:{ticks:{color:chartPalette.text},grid:{color:chartPalette.grid},beginAtZero:true}}
+  }),[chartPalette]);
+  const doughnutOptions:any=useMemo(()=>({responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:chartPalette.text,usePointStyle:true,boxWidth:10}}}}),[chartPalette]);
 
   return <section>
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
@@ -145,19 +166,19 @@ export default function DashboardPage() {
     <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">{cards.map(([l,v,i,a]:any)=><Card key={l} label={l} value={v} icon={i} accent={a}/>)}</div>
 
     <div className="mt-6 grid gap-6 xl:grid-cols-2">
-      <section className="brand-card rounded-2xl p-6">
-        <div className="mb-5 flex items-center gap-2"><BarChart3 size={19} className="text-[var(--role-accent)]"/><h3 className="font-semibold text-[#0B1D3A]">{role==="pic"?"Pekerjaan per Stockpoint":"Pekerjaan per Branch"}</h3></div>
-        <div className="h-72"><Bar data={branchData} options={{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}/></div>
+      <section className="chart-force-light rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="mb-5 flex items-center gap-2"><BarChart3 size={19} className="text-blue-600"/><h3 className="font-semibold text-slate-900">{role==="pic"?"Pekerjaan per Stockpoint":"Pekerjaan per Branch"}</h3></div>
+        <div className="h-72"><Bar data={branchData} options={{...chartOptions,plugins:{...chartOptions.plugins,legend:{display:false}}}}/></div>
       </section>
-      <section className="brand-card rounded-2xl p-6">
-        <h3 className="font-semibold text-[#0B1D3A]">Brandable vs Not Brandable</h3>
-        <div className="mx-auto mt-5 h-72 max-w-md"><Doughnut data={statusData} options={{responsive:true,maintainAspectRatio:false}}/></div>
+      <section className="chart-force-light rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h3 className="font-semibold text-slate-900">Brandable vs Not Brandable</h3>
+        <div className="mx-auto mt-5 h-72 max-w-md"><Doughnut data={statusData} options={doughnutOptions}/></div>
       </section>
     </div>
 
-    <section className="brand-card mt-6 rounded-2xl p-6">
-      <h3 className="font-semibold text-[#0B1D3A]">Tren Pemasangan</h3>
-      <div className="mt-5 h-72"><Line data={trendData} options={{responsive:true,maintainAspectRatio:false}}/></div>
+    <section className="chart-force-light mt-6 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      <h3 className="font-semibold text-slate-900">Tren Pemasangan</h3>
+      <div className="mt-5 h-72"><Line data={trendData} options={chartOptions}/></div>
     </section>
 
     <div className="mt-6 grid gap-5 xl:grid-cols-2">

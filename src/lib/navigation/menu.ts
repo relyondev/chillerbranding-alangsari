@@ -32,6 +32,7 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       items: [
         { label: "Master Data", href: "/app/master-data", icon: Database },
         { label: "Manajemen User", href: "/app/users", icon: Users },
+        { label: "Manajemen PIC", href: "/app/pics", icon: UserRound },
       ],
     },
     {
@@ -58,6 +59,7 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       items: [
         { label: "Master Data", href: "/app/master-data", icon: Database },
         { label: "Manajemen User", href: "/app/users", icon: Users },
+        { label: "Manajemen PIC", href: "/app/pics", icon: UserRound },
       ],
     },
     { items: [{ label: "Akun", href: "/app/account", icon: UserRound }] },

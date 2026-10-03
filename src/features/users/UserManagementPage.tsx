@@ -5,6 +5,7 @@ import {
   ArrowUpDown,
   Check,
   KeyRound,
+  MapPinned,
   ChevronDown,
   Search,
   UserPlus,
@@ -33,6 +34,14 @@ type Assignment = {
   pic_user_id: string;
 };
 
+
+const userRoleBadge:Record<string,{label:string;className:string}>={
+  pic:{label:"PIC",className:"bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-300"},
+  admin:{label:"ADMIN",className:"bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-100"},
+  super_admin:{label:"SUPER ADMIN",className:"bg-neutral-900 text-white dark:bg-neutral-100 dark:text-neutral-900"},
+  client:{label:"KLIEN",className:"bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"},
+};
+function UserRoleBadge({role}:{role:string}){const meta=userRoleBadge[role]??{label:role.toUpperCase(),className:"bg-slate-100 text-slate-600"};return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold tracking-wide ${meta.className}`}>{meta.label}</span>;}
 function StockpointPicker({
   stockpoints,
   selected,
@@ -241,14 +250,19 @@ export default function UserManagementPage() {
   const [saving, setSaving] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState("");
-  const [sortKey, setSortKey] = useState("full_name");
-  const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
+  const [sortKey, setSortKey] = useState("created_at");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [pageSize, setPageSize] = useState("10");
   const [page, setPage] = useState(1);
   const [resetTarget, setResetTarget] = useState<any | null>(null);
   const [resetPassword, setResetPassword] = useState("");
   const [resetPasswordConfirm, setResetPasswordConfirm] = useState("");
   const [resettingPassword, setResettingPassword] = useState(false);
+  const [assignmentTarget, setAssignmentTarget] = useState<any | null>(null);
+  const [assignmentOptions, setAssignmentOptions] = useState<any[]>([]);
+  const [assignmentSelected, setAssignmentSelected] = useState<string[]>([]);
+  const [loadingAssignments, setLoadingAssignments] = useState(false);
+  const [savingAssignments, setSavingAssignments] = useState(false);
 
   async function load() {
     try {
@@ -262,7 +276,7 @@ export default function UserManagementPage() {
       ] = await Promise.all([
         s.from("profiles")
           .select(
-            "id,full_name,phone,role,is_active,email,pic_profiles(pic_code,branch_id)"
+            "id,full_name,phone,role,is_active,email,created_at,pic_profiles(pic_code,branch_id)"
           )
           .order("created_at", { ascending: false }),
 
@@ -425,6 +439,56 @@ export default function UserManagementPage() {
   }
 
 
+async function openAssignmentManager(user:any) {
+  setAssignmentTarget(user);
+  setLoadingAssignments(true);
+  try {
+    const s = getSupabaseClient();
+    const { data, error } = await s.rpc("admin_get_pic_stockpoint_options", { p_pic_user_id: user.id });
+    if (error) throw error;
+    const options = data ?? [];
+    setAssignmentOptions(options);
+    setAssignmentSelected(options.filter((row:any)=>row.is_assigned).map((row:any)=>row.stockpoint_id));
+  } catch (error) {
+    setAssignmentTarget(null);
+    notify("error","Gagal memuat assignment",error instanceof Error ? error.message : "Assignment PIC gagal dimuat.");
+  } finally {
+    setLoadingAssignments(false);
+  }
+}
+
+function toggleAssignment(row:any) {
+  if (row.assigned_to_other_pic) return;
+  const selected = assignmentSelected.includes(row.stockpoint_id);
+  if (selected && row.has_work) {
+    notify("warning","Assignment tidak bisa dihapus","PIC sudah pernah memiliki pekerjaan pada Stockpoint ini.");
+    return;
+  }
+  setAssignmentSelected((current)=> selected ? current.filter((id)=>id!==row.stockpoint_id) : [...current,row.stockpoint_id]);
+}
+
+async function saveAssignments() {
+  if (!assignmentTarget) return;
+  setSavingAssignments(true);
+  try {
+    const s = getSupabaseClient();
+    const { error } = await s.rpc("admin_set_pic_stockpoint_assignments", {
+      p_pic_user_id: assignmentTarget.id,
+      p_stockpoint_ids: assignmentSelected,
+    });
+    if (error) throw error;
+    notify("success","Assignment diperbarui","Stockpoint PIC berhasil diperbarui.");
+    setAssignmentTarget(null);
+    setAssignmentOptions([]);
+    await load();
+  } catch (error:any) {
+    const message = error?.message || "Assignment gagal diperbarui.";
+    notify("error","Gagal memperbarui assignment", message.includes("cannot_unassign_stockpoint_with_work") ? "Stockpoint tidak dapat dilepas karena PIC sudah pernah memiliki pekerjaan di sana." : message);
+  } finally {
+    setSavingAssignments(false);
+  }
+}
+
 async function submitPasswordReset(event: React.FormEvent) {
   event.preventDefault();
   if (!resetTarget) return;
@@ -451,7 +515,7 @@ async function submitPasswordReset(event: React.FormEvent) {
   const filteredRows = rows.filter((row) => {
     const q = userSearch.trim().toLowerCase();
     const roleOk = !userRoleFilter || row.role === userRoleFilter;
-    const queryOk = !q || [row.full_name, row.email, row.role, row.pic_profiles?.pic_code]
+    const queryOk = !q || [row.full_name, row.email, row.role]
       .filter(Boolean).join(" ").toLowerCase().includes(q);
     return roleOk && queryOk;
   });
@@ -498,7 +562,7 @@ async function submitPasswordReset(event: React.FormEvent) {
           <input
             value={userSearch}
             onChange={(e)=>{setUserSearch(e.target.value);setPage(1);}}
-            placeholder="Cari nama, email, ID PIC..."
+            placeholder="Cari nama atau email..."
             className="rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-[var(--role-accent)]"
           />
           <select
@@ -526,7 +590,6 @@ async function submitPasswordReset(event: React.FormEvent) {
                   ["Nama","full_name"],
                   ["Email","email"],
                   ["Role","role"],
-                  ["ID PIC","pic_code"],
                   ["Status","is_active"],
                 ].map(([label,key]) => (
                   <th key={key} className="px-5 py-3 text-left text-xs font-semibold text-slate-500">
@@ -534,6 +597,7 @@ async function submitPasswordReset(event: React.FormEvent) {
                   </th>
                 ))}
                 <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500">Aksi</th>
+                <th className="px-5 py-3 text-left text-xs font-semibold text-slate-500"><button type="button" onClick={()=>toggleSort("created_at")} className="inline-flex items-center gap-1.5 hover:text-[var(--role-accent)]">Dibuat<SortIcon column="created_at"/></button></th>
               </tr>
             </thead>
 
@@ -556,18 +620,15 @@ async function submitPasswordReset(event: React.FormEvent) {
                       {r.role}
                     </td>
 
-                    <td className="px-5 py-3">
-                      {r.pic_profiles?.pic_code ?? "—"}
-                    </td>
-
                     <td className="px-5 py-3">{r.is_active ? "Aktif" : "Nonaktif"}</td>
                     <td className="px-5 py-3">
-                      {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && (
-                        <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--role-accent)] px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]">
+                      {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) ? (
+                        <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex items-center gap-1.5 rounded-xl bg-[var(--role-accent)] px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]">
                           <KeyRound size={14}/> Reset Password
                         </button>
-                      )}
+                      ) : <span className="text-xs text-slate-400">—</span>}
                     </td>
+                    <td className="px-5 py-3 whitespace-nowrap text-slate-500">{r.created_at ? new Date(r.created_at).toLocaleString("id-ID") : "—"}</td>
                   </tr>
                 ))
               ) : (
@@ -586,9 +647,11 @@ async function submitPasswordReset(event: React.FormEvent) {
         <div className="space-y-3 p-3 md:hidden">
           {pagedRows.length ? pagedRows.map((r)=>(
             <article key={r.id} className="mobile-data-card rounded-2xl border border-slate-200 bg-white p-4">
-              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{r.full_name}</p><p className="mt-1 break-all text-xs text-slate-500">{r.email}</p></div><span className="rounded-full bg-[var(--role-pale)] px-2.5 py-1 text-[11px] font-semibold text-[var(--role-accent)]">{r.role}</span></div>
-              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">ID PIC</dt><dd className="mt-1 font-medium">{r.pic_profiles?.pic_code ?? "—"}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Status</dt><dd className="mt-1 font-medium">{r.is_active?"Aktif":"Nonaktif"}</dd></div></dl>
-              {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--role-accent)] px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]"><KeyRound size={15}/>Reset Password</button>}
+              <div className="flex items-start justify-between gap-3"><div><p className="font-semibold text-[#0B1D3A]">{r.full_name}</p><p className="mt-1 break-all text-xs text-slate-500">{r.email}</p></div><UserRoleBadge role={r.role}/></div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">Status</dt><dd className="mt-1 font-medium">{r.is_active?"Aktif":"Nonaktif"}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Dibuat</dt><dd className="mt-1 text-xs font-medium">{r.created_at ? new Date(r.created_at).toLocaleString("id-ID") : "—"}</dd></div></dl>
+              <div className="mt-4 grid gap-2">
+                {(actorRole === "super_admin" || ["pic","client"].includes(r.role)) && <button type="button" onClick={()=>{setResetTarget(r);setResetPassword("");setResetPasswordConfirm("");}} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--role-accent)] px-3 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[var(--role-accent-hover)] hover:shadow-md focus:outline-none focus:ring-2 focus:ring-[var(--role-soft)]"><KeyRound size={15}/>Reset Password</button>}
+              </div>
             </article>
           )) : <div className="py-10 text-center text-sm text-slate-400">Belum ada data user.</div>}
         </div>
@@ -785,6 +848,45 @@ async function submitPasswordReset(event: React.FormEvent) {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {assignmentTarget && (
+        <div className="fixed inset-0 z-[95] flex items-start justify-center overflow-y-auto bg-black/55 p-4 py-10 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-3xl bg-white p-6 shadow-2xl dark:bg-[var(--role-surface)]">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-xl font-bold text-[#0B1D3A] dark:text-white">Kelola Stockpoint PIC</h3>
+                <p className="mt-1 text-sm text-slate-500">{assignmentTarget.full_name} · {assignmentTarget.pic_profiles?.pic_code ?? "PIC"}</p>
+              </div>
+              <button type="button" onClick={()=>setAssignmentTarget(null)} className="rounded-xl border border-slate-200 p-2 text-slate-500"><X size={18}/></button>
+            </div>
+
+            {loadingAssignments ? (
+              <div className="py-12 text-center text-sm text-slate-400">Memuat Stockpoint...</div>
+            ) : (
+              <div className="mt-6 max-h-[55vh] space-y-2 overflow-y-auto pr-1">
+                {assignmentOptions.map((row:any)=>{
+                  const selected = assignmentSelected.includes(row.stockpoint_id);
+                  const locked = selected && row.has_work;
+                  const unavailable = row.assigned_to_other_pic;
+                  return (
+                    <button key={row.stockpoint_id} type="button" disabled={unavailable} onClick={()=>toggleAssignment(row)} className={`flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition ${selected ? "border-[var(--role-accent)] bg-[var(--role-pale)]" : "border-slate-200 bg-white"} ${unavailable ? "cursor-not-allowed opacity-45" : "hover:border-[var(--role-accent)]"}`}>
+                      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-md border ${selected ? "border-[var(--role-accent)] bg-[var(--role-accent)] text-white" : "border-slate-300"}`}>{selected && <Check size={13}/>}</span>
+                      <span className="min-w-0 flex-1"><span className="block text-xs font-bold text-[var(--role-accent)]">{row.stockpoint_code}</span><span className="mt-0.5 block font-semibold text-[#0B1D3A] dark:text-white">{row.stockpoint_name}</span></span>
+                      {locked && <span className="rounded-full bg-amber-100 px-2.5 py-1 text-[10px] font-semibold text-amber-700">Ada pekerjaan · tidak bisa dilepas</span>}
+                      {unavailable && <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-semibold text-slate-500">Dipakai PIC lain</span>}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button type="button" onClick={()=>setAssignmentTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button>
+              <button type="button" disabled={savingAssignments||loadingAssignments} onClick={saveAssignments} className="rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{savingAssignments ? "Menyimpan..." : "Simpan Assignment"}</button>
+            </div>
+          </div>
         </div>
       )}
 
