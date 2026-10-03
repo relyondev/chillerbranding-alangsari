@@ -63,3 +63,9 @@
 - Dark / Light mode dengan penyimpanan preferensi lokal.
 - Mobile table Data Pekerjaan, Master Stockpoint, dan Manajemen User berubah menjadi card view agar tidak horizontal-scroll.
 - Tambah `admin-reset-password` Edge Function dan audit event tanpa menyimpan password.
+
+## 1.2.2
+- Fixed generic `reopen_failed` responses by preserving RPC / Drive error details.
+- Added explicit validation for submission ID and reopen reason.
+- Reopen Drive cleanup now reports per-file failures and remains safe to retry.
+- Added reopen troubleshooting documentation.
