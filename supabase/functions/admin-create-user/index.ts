@@ -54,6 +54,27 @@ Deno.serve(async (req) => {
       );
     }
 
+    const picNumber = body.role === "pic" ? Number(body.pic_number) : null;
+    if (body.role === "pic") {
+      if (!body.branch_id) {
+        return jsonResponse({ error: "pic_branch_required" }, { status: 400 });
+      }
+      if (!Number.isInteger(picNumber) || picNumber < 1 || picNumber > 99) {
+        return jsonResponse({ error: "pic_number_must_be_01_to_99" }, { status: 400 });
+      }
+
+      const { data: duplicatePic } = await admin
+        .from("pic_profiles")
+        .select("user_id")
+        .eq("branch_id", body.branch_id)
+        .eq("sequence_number", picNumber)
+        .maybeSingle();
+
+      if (duplicatePic) {
+        return jsonResponse({ error: "pic_code_already_exists" }, { status: 409 });
+      }
+    }
+
     const { data: created, error: createError } =
       await admin.auth.admin.createUser({
         email,
@@ -79,6 +100,7 @@ Deno.serve(async (req) => {
         p_role: body.role,
         p_branch_id: body.branch_id ?? null,
         p_stockpoint_ids: body.stockpoint_ids ?? [],
+        p_pic_number: picNumber,
       }
     );
 

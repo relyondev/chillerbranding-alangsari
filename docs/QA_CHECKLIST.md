@@ -11,8 +11,8 @@
 ## PIC Input
 
 - [ ] Stockpoint appears only from active assignment
-- [ ] Kode Toko format 4/3/3–4 numeric
-- [ ] ID Salesman format 4/3/3–4, final segment begins with letter
+- [ ] Kode Toko prefix mengikuti Stockpoint; suffix 2–6 digit numeric
+- [ ] ID Salesman prefix mengikuti Stockpoint; suffix S + 1–4 digit
 - [ ] Phone begins `08` and is at least 9 digits
 - [ ] Address is at least 20 characters
 - [ ] Duplicate submission rule blocks >=3/4 duplicate match
@@ -27,9 +27,9 @@
 
 ## Location — Browser Failure
 
-- [ ] First failure shows retry 1/3
-- [ ] Second failure shows retry 2/3
-- [ ] Third failure unlocks manual Google Maps field
+- [ ] GPS hanya dicoba 1 kali
+- [ ] First failure langsung unlock manual Google Maps field
+- [ ] Tombol GPS tidak menawarkan retry kedua
 - [ ] Invalid non-Google link is rejected
 - [ ] `https://maps.app.goo.gl/...` is accepted
 - [ ] Saved manual row has NULL coordinates and populated `google_maps_url`
@@ -43,6 +43,9 @@
 - [ ] Already-saved photo does not revert to upload-required state
 - [ ] Drive file names follow convention
 - [ ] Existing photo slots persist after reload
+- [ ] New upload is resized to max 1600 px long edge
+- [ ] New upload contains bottom-left Hanzi watermark with WIB time, photo type, GPS, PIC, and Stockpoint
+- [ ] Manual Maps submission watermark uses LAT - / LNG - when coordinates are unavailable
 
 ## Completion
 

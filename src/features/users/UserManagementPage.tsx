@@ -246,6 +246,7 @@ export default function UserManagementPage() {
 
   const [role, setRole] = useState("pic");
   const [branchId, setBranchId] = useState("");
+  const [picNumber, setPicNumber] = useState("");
   const [selectedStockpoints, setSelectedStockpoints] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [userSearch, setUserSearch] = useState("");
@@ -310,11 +311,13 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     setSelectedStockpoints([]);
+    setPicNumber("");
   }, [branchId]);
 
   useEffect(() => {
     if (role !== "pic") {
       setBranchId("");
+      setPicNumber("");
       setSelectedStockpoints([]);
     }
   }, [role]);
@@ -327,6 +330,21 @@ export default function UserManagementPage() {
     [stockpoints, branchId]
   );
 
+  const selectedBranch = useMemo(
+    () => branches.find((branch) => branch.id === branchId) ?? null,
+    [branches, branchId]
+  );
+
+  const picCodePreview = useMemo(() => {
+    if (!selectedBranch || !/^\d{2}$/.test(picNumber)) return "";
+    return `${selectedBranch.code}-${picNumber}`;
+  }, [selectedBranch, picNumber]);
+
+  const picCodeDuplicate = useMemo(() => {
+    if (!picCodePreview) return false;
+    return rows.some((row) => row.pic_profiles?.pic_code === picCodePreview);
+  }, [rows, picCodePreview]);
+
   const occupiedIds = useMemo(
     () =>
       new Set(
@@ -338,6 +356,7 @@ export default function UserManagementPage() {
   function resetForm() {
     setRole("pic");
     setBranchId("");
+    setPicNumber("");
     setSelectedStockpoints([]);
   }
 
@@ -352,6 +371,16 @@ export default function UserManagementPage() {
     if (role === "pic") {
       if (!branchId) {
         notify("error","Branch wajib dipilih","Pilih Branch untuk user PIC.");
+        return;
+      }
+
+      if (!/^(0[1-9]|[1-9][0-9])$/.test(picNumber)) {
+        notify("error","ID PIC belum valid","Masukkan tepat 2 digit angka dari 01 sampai 99.");
+        return;
+      }
+
+      if (picCodeDuplicate) {
+        notify("error","ID PIC sudah digunakan",`${picCodePreview} sudah terdaftar. Gunakan nomor PIC lain.`);
         return;
       }
 
@@ -381,6 +410,7 @@ export default function UserManagementPage() {
       password,
       role,
       branch_id: role === "pic" ? branchId : null,
+      pic_number: role === "pic" ? Number(picNumber) : null,
       stockpoint_ids:
         role === "pic" ? selectedStockpoints : [],
     };
@@ -428,10 +458,13 @@ export default function UserManagementPage() {
       setOpen(false);
       await load();
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Gagal membuat user.";
       notify(
         "error",
-        "Gagal membuat user",
-        error instanceof Error ? error.message : "Gagal membuat user."
+        message === "pic_code_already_exists" ? "ID PIC sudah digunakan" : "Gagal membuat user",
+        message === "pic_code_already_exists"
+          ? "Nomor ID PIC tersebut sudah terdaftar pada Branch yang dipilih."
+          : message
       );
     } finally {
       setSaving(false);
@@ -808,6 +841,33 @@ async function submitPasswordReset(event: React.FormEvent) {
                       </option>
                     ))}
                   </select>
+                </label>
+
+                <label className="block text-sm font-semibold text-slate-600">
+                  ID PIC
+                  <div className="mt-2 flex overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:border-[var(--role-accent)]">
+                    <span className="flex min-w-[74px] items-center justify-center border-r border-slate-200 bg-[var(--role-pale)] px-3 text-sm font-bold text-[var(--role-accent)]">
+                      {selectedBranch ? `${selectedBranch.code}-` : "---"}
+                    </span>
+                    <input
+                      value={picNumber}
+                      onChange={(event) => setPicNumber(event.target.value.replace(/\D/g, "").slice(0, 2))}
+                      disabled={!branchId}
+                      required={role === "pic"}
+                      inputMode="numeric"
+                      placeholder="01"
+                      className="min-w-0 flex-1 px-4 py-3 font-normal outline-none disabled:bg-slate-50 disabled:text-slate-400"
+                    />
+                  </div>
+                  <p className={`mt-2 text-xs ${picCodeDuplicate ? "text-red-500" : "text-slate-400"}`}>
+                    {!branchId
+                      ? "Pilih Branch terlebih dahulu."
+                      : picCodeDuplicate
+                      ? `${picCodePreview} sudah digunakan.`
+                      : picCodePreview
+                      ? `ID PIC: ${picCodePreview}`
+                      : "Masukkan tepat 2 digit, contoh 01 atau 15."}
+                  </p>
                 </label>
 
                 {branchId ? (

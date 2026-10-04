@@ -1,3 +1,32 @@
+# 1.5.2 — Data Pekerjaan Display Normalization
+- Data Pekerjaan now normalizes legacy display values to uppercase on the frontend only.
+- Applies to branch, stockpoint, PIC, salesman/store codes, store/owner names, store type, and branding status.
+- Address, reason, Maps links, dates, and timestamps are intentionally left unchanged.
+- XLSX/PDF exports generated from Data Pekerjaan also normalize the same fields to uppercase on the frontend.
+- No database migration or data rewrite is required.
+
+# V1.5.1 — Photo Watermark & Single-attempt GPS Fallback
+
+- Preserves all V1.5.0 client revisions, migration 025, and the `admin-create-user` Edge Function update.
+- New photo uploads are processed in the frontend before upload: max 1600 px long edge, JPEG compression, then a bottom-left documentation watermark.
+- Watermark uses the Hanzi Management logo when available, with automatic text fallback `HANZ MANAGEMENT`.
+- Watermark lines: WIB upload timestamp, photo type, LAT/LNG, PIC code + name, and Stockpoint code + name.
+- If a submission uses manual Google Maps and has no coordinates, watermark safely prints `LAT - · LNG -` rather than inventing coordinates.
+- Browser GPS now gets one attempt only. On failure/unsupported geolocation, the manual Google Maps field is unlocked immediately.
+- Manual Maps validation is restricted to recognized Google Maps hosts, with `https://maps.app.goo.gl/xxxxxxxx` as the placeholder.
+- No new database migration and no additional Edge Function changes beyond V1.5.0.
+
+# V1.5.0 — Client Revision: PIC ID, Form Order & Photo Compression
+
+- PIC registration now uses a manually selected 2-digit numeric ID (01–99) with automatic Branch prefix and duplicate detection.
+- Input Branding is consolidated into one section and reordered: Stockpoint → ID Salesman → Kode Toko → store data → location → store/chiller/status → reason → photos.
+- Kode Toko manual suffix now accepts 2–6 numeric digits; backend validation and database constraint updated by migration 025.
+- Nama Toko and Nama Pemilik are converted to uppercase in the frontend before save; Alamat and Alasan remain unchanged.
+- Existing duplicate engine (3 of 4 store identity fields), branding logic, and current GPS flow are preserved.
+- Photos are resized client-side to max 1600 px on the longest edge and encoded as JPEG around 82% quality before upload, with adaptive compression toward ~1 MB.
+- GPS accuracy/live-map upgrade and photo watermark are intentionally excluded and remain pending additional scope.
+- Requires migration `025_manual_pic_id_store_code_range.sql` and redeploy of `admin-create-user` Edge Function.
+
 # V1.4.5 — Audit Assignment Human-readable Hotfix
 
 - PIC Stockpoint assignment audit events now resolve PIC identity and Stockpoint UUIDs into code + name.

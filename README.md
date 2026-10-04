@@ -4,9 +4,9 @@ Production web application for Relyon Production to manage Branding Chiller fiel
 
 ## Release
 
-**V1 Final Lock — 1.1.0**
+**Current package — V1.5.2**
 
-This release is the locked V1 baseline. New features should be developed as V1.1+ or V2 rather than changing the V1 workflow silently.
+This package includes the V1.5.0 client revision, photo watermark processing, single-attempt GPS fallback, and frontend-only uppercase normalization for legacy values shown/exported from Data Pekerjaan.
 
 ## Stack
 
@@ -33,8 +33,8 @@ See [docs/ROLES_AND_WORKFLOWS.md](docs/ROLES_AND_WORKFLOWS.md).
 
 1. PIC logs in and creates a branding draft.
 2. PIC selects an assigned Stockpoint and fills store/salesman data.
-3. Location is captured from browser geolocation. After three failed attempts, a validated Google Maps link can be entered manually.
-4. Brandable stores upload required photos.
+3. Location is attempted once through browser geolocation. If it fails, a validated Google Maps link can be entered manually.
+4. Brandable stores upload required photos; new uploads are resized/compressed and stamped with the Hanzi Management field-documentation watermark in the browser before upload.
 5. PIC submits the work as DONE.
 6. Data can be reviewed, exported, synchronized to Spreadsheet, and reopened by Admin/Super Admin when required.
 
@@ -72,7 +72,7 @@ Never place Supabase service-role keys, HMAC secrets, Drive IDs, Spreadsheet IDs
 
 ## Database Migrations
 
-Migrations are stored in `supabase/migrations/` and must be applied in numeric order. Existing production databases that already have 001–020 applied only need migration **021** for the final location fallback behavior.
+Migrations are stored in `supabase/migrations/` and must be applied in numeric order. For this V1.5.2 package, an environment that already has migrations 001–024 applied only needs migration **025**. No migration 026 is required.
 
 See [docs/DATABASE.md](docs/DATABASE.md).
 
@@ -92,7 +92,7 @@ See [docs/DATABASE.md](docs/DATABASE.md).
 
 ## Ownership
 
-© 2026 Sistem Operasional Branding Warung. Made with ♥ by RELYON PRODUCTION.
+Development by Hanz Management in collaboration with Relyon.
 
 
 ## V1.1.0 Admin UX
