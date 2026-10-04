@@ -144,3 +144,7 @@
 - Audit detail modal contrast fixed for light mode and kept readable in dark mode.
 - Audit date filters now show explicit Dari tanggal / Sampai tanggal labels.
 - Audit table headers are sortable; default remains newest audit event first.
+
+## 1.4.6 — UI wording hotfix
+- Footer changed to “Development by Hanz Management in collaboration with Relyon”.
+- Admin/Super Admin action button label changed from “Reopen” to “Edit”; underlying reopen workflow is unchanged.
