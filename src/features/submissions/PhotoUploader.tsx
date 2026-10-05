@@ -379,7 +379,7 @@ export default function PhotoUploader({
   if (loadingExisting) {
     return (
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-500">
-        Memeriksa foto draft...
+        Memeriksa foto tersimpan...
       </div>
     );
   }

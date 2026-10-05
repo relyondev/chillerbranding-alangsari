@@ -9,6 +9,7 @@ import Topbar from "../components/layout/Topbar";
 import ToastHost from "../components/ui/ToastHost";
 import AppFooter from "../components/layout/AppFooter.astro";
 import InactivityGuard from "../components/auth/InactivityGuard";
+import AppAccessGuard from "../components/auth/AppAccessGuard";
 
 interface Props { title: string; }
 const { title } = Astro.props;
@@ -35,7 +36,8 @@ const { title } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
 </head>
   <body>
-    <div class="min-h-screen">
+    <AppAccessGuard client:load />
+    <div id="app-protected-shell" class="hidden min-h-screen">
       <RoleAwareSidebar client:load />
       <div class="lg:pl-72">
         <Topbar title={title} client:load />

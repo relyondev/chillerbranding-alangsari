@@ -1,5 +1,5 @@
 import { notify } from "../../components/ui/ToastHost";
-import { CheckCircle2, LocateFixed, Save, Send, Store, MapPinned, ExternalLink, RefreshCw } from "lucide-react";
+import { CheckCircle2, LocateFixed, Save, Send, Store, MapPinned, ExternalLink, RefreshCw, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getSupabaseClient } from "../../lib/supabase/client";
 import { buildSalesmanCode, buildStoreCode } from "../../lib/validation/codes";
@@ -75,6 +75,7 @@ export default function SubmissionForm() {
   const [p1,setP1] = useState("");
   const [p2,setP2] = useState("");
   const [p3,setP3] = useState("");
+  const [salesmen,setSalesmen] = useState<any[]>([]);
   const [storeP1,setStoreP1] = useState("");
   const [storeP2,setStoreP2] = useState("");
   const [storeP3,setStoreP3] = useState("");
@@ -97,6 +98,7 @@ export default function SubmissionForm() {
   const [photosComplete,setPhotosComplete] = useState(false);
   const [busy,setBusy] = useState(false);
   const [loadingDraft,setLoadingDraft] = useState(false);
+  const [submitSuccess,setSubmitSuccess] = useState<{count:number}|null>(null);
 
   useEffect(() => {
     const onVersion = (e:any) => {
@@ -116,7 +118,7 @@ export default function SubmissionForm() {
         const [{ data }, { data: profile }, { data: picProfile }] = await Promise.all([
           s
             .from("pic_stockpoint_assignments")
-            .select("stockpoint_id,stockpoints(id,code,name)")
+            .select("stockpoint_id,stockpoints(id,code,name,branches(code,name))")
             .eq("pic_user_id",user.id)
             .eq("is_active",true),
           s.from("profiles").select("full_name").eq("id",user.id).maybeSingle(),
@@ -191,11 +193,24 @@ export default function SubmissionForm() {
   const manualMapsValid = manualMapsUrl.trim() ? isGoogleMapsUrl(manualMapsUrl) : false;
   const manualAllowed = geoAttempts >= 1 && !geo;
   const selectedStockpoint = useMemo(() => stockpoints.find((item:any) => item.id === stockpointId) ?? null,[stockpoints,stockpointId]);
+  const selectedSalesman = useMemo(() => salesmen.find((item:any)=>String(item.suffix).toUpperCase()===p3.toUpperCase()) ?? null,[salesmen,p3]);
   const detailsLocked = !stockpointId || !!submission;
 
 
+  useEffect(()=>{
+    let cancelled=false;
+    (async()=>{
+      if(!stockpointId){ setSalesmen([]); return; }
+      const s=getSupabaseClient();
+      const {data}=await s.from("salesmen").select("id,stockpoint_id,suffix,full_code,name").eq("stockpoint_id",stockpointId).eq("is_active",true).order("name");
+      if(!cancelled) setSalesmen(data??[]);
+    })();
+    return()=>{cancelled=true;};
+  },[stockpointId]);
+
   function selectStockpoint(value:string) {
     setStockpointId(value);
+    
     if (submission) return;
     const selected = stockpoints.find((item:any)=>item.id === value);
     const [first = "", second = ""] = String(selected?.code ?? "").split("/");
@@ -207,9 +222,10 @@ export default function SubmissionForm() {
   }
 
   function changeSalesmanSuffix(value:string) {
-    const digits = value.replace(/\D/g, "").slice(0,4);
+    const digits = value.replace(/\D/g, "").slice(0,5);
     setP3(`S${digits}`);
   }
+
 
   function changeChiller(value:string) {
     if (!value) { setHasChiller(null); return; }
@@ -262,13 +278,14 @@ export default function SubmissionForm() {
     if (!stockpointId) return notify("error","Periksa kembali","Pilih Stockpoint.");
     if (!storeType) return notify("error","Periksa kembali","Pilih Jenis Store.");
     if (hasChiller === null) return notify("error","Periksa kembali","Pilih kondisi Chiller.");
-    if (!/^S\d{1,4}$/.test(p3)) return notify("error","ID Salesman belum lengkap","Isi 1–4 angka setelah huruf S.");
+    if (!/^S\d{1,5}$/.test(p3)) return notify("error","ID Salesman belum lengkap","Isi 1–5 angka setelah huruf S.");
+    if (!selectedSalesman) return notify("error","Salesman belum terdaftar","Pilih salesman dari autocomplete atau tambahkan nama salesman terlebih dahulu.");
     if (!/^\d{2,6}$/.test(storeP3)) return notify("error","Kode Toko belum valid","Bagian terakhir Kode Toko wajib 2–6 digit angka.");
     if (manualMapsUrl.trim() && !manualMapsValid) return notify("error","Link Maps tidak valid","Gunakan link Google Maps yang valid.");
     if (!brandable && !reason.trim()) return notify("error","Periksa kembali","Alasan toko tidak di branding wajib diisi.");
 
-    if (!/^08\d{7,13}$/.test(phone)) {
-      notify("error","Nomor HP tidak valid","Nomor HP wajib diawali 08 dan minimal 9 angka.");
+    if (!/^08\d{8,11}$/.test(phone)) {
+      notify("error","Nomor HP tidak valid","Nomor HP wajib diawali 08, minimal 10 digit, dan maksimal 13 digit.");
       return;
     }
 
@@ -327,8 +344,24 @@ export default function SubmissionForm() {
       });
 
       if (error) throw error;
-      notify("success","Pekerjaan selesai","Data berhasil disubmit dan masuk ke Pekerjaan Selesai.");
-      window.location.href="/app/my-work?status=done";
+
+      const { data:{ user } } = await s.auth.getUser();
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+      let totalToday = 1;
+      if (user) {
+        const { count } = await s
+          .from("submissions")
+          .select("id",{ count:"exact", head:true })
+          .eq("pic_user_id",user.id)
+          .eq("workflow_status","done")
+          .gte("submitted_at",start.toISOString())
+          .lt("submitted_at",end.toISOString())
+          .is("deleted_at",null);
+        totalToday = Math.max(1, count ?? 0);
+      }
+      setSubmitSuccess({ count:totalToday });
     } catch(e:any) {
       notify("error","Periksa kembali",e?.message || "Submit gagal.");
     } finally {
@@ -367,7 +400,7 @@ export default function SubmissionForm() {
             Stockpoint
             <select value={stockpointId} onChange={e=>selectStockpoint(e.target.value)} disabled={!!submission} className={inputClass}>
               <option value="">Pilih Stockpoint</option>
-              {stockpoints.map(s=><option key={s.id} value={s.id}>{s.name}</option>)}
+              {stockpoints.map(s=><option key={s.id} value={s.id}>{String(s.name??"").replace(/^SP\s+/i,"")} - {s.code}</option>)}
             </select>
           </label>
 
@@ -387,12 +420,27 @@ export default function SubmissionForm() {
               <div className="min-w-0">
                 <div className="flex min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white focus-within:border-[var(--role-accent)] focus-within:ring-4 focus-within:ring-[var(--role-border)]">
                   <span className={`flex items-center border-r border-slate-200 px-3 text-sm font-bold ${detailsLocked ? "bg-slate-50 text-slate-400" : "bg-[var(--role-pale)] text-[var(--role-accent)]"}`}>S</span>
-                  <input value={p3.replace(/^S/, "")} onChange={e=>changeSalesmanSuffix(e.target.value)} placeholder="1234" disabled={detailsLocked} inputMode="numeric" className="w-full min-w-0 border-0 bg-transparent px-3 py-3 text-sm outline-none disabled:bg-slate-50 disabled:text-slate-400"/>
+                  <input value={p3.replace(/^S/, "")} onChange={e=>changeSalesmanSuffix(e.target.value)} placeholder="12345" disabled={detailsLocked} inputMode="numeric" className="w-full min-w-0 border-0 bg-transparent px-3 py-3 text-sm outline-none disabled:bg-slate-50 disabled:text-slate-400"/>
                 </div>
-                <span className="mt-1.5 block min-h-[16px] text-[11px] leading-4 text-slate-400">Isi maksimal 4 angka. Huruf S sudah otomatis.</span>
+                <span className="mt-1.5 block min-h-[16px] text-[11px] leading-4 text-slate-400">Isi maksimal 5 angka. Huruf S sudah otomatis (maksimum total 6 karakter).</span>
               </div>
             </div>
             <div className="mt-2 rounded-lg bg-[var(--role-pale)] px-3 py-2 text-xs font-semibold text-[var(--role-accent)]">Preview: {stockpointId ? (salesman || "//") : "Pilih Stockpoint terlebih dahulu"}</div>
+            {stockpointId && !submission && (
+              <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+                <div className="flex items-start gap-2">
+                  <UserRound size={16} className="mt-0.5 text-[var(--role-accent)]"/>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-slate-600">
+                      {selectedSalesman ? `Nama Salesman: ${selectedSalesman.name}` : p3 ? "ID Salesman belum ditemukan pada Stockpoint ini." : "Masukkan ID Salesman."}
+                    </p>
+                    <p className="mt-1 text-xs text-slate-400">
+                      Lupa kode salesman? <a href="/app/my-salesmen" className="font-semibold text-[var(--role-accent)] underline underline-offset-2">Cek di sini</a>.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="min-w-0">
@@ -422,8 +470,8 @@ export default function SubmissionForm() {
 
             <label className="min-w-0 text-sm font-semibold text-slate-600 lg:col-span-2">
               No HP / WA Aktif
-              <span className="mt-1 block min-h-[16px] text-[11px] font-normal leading-4 text-slate-400">Wajib diawali 08 dan minimal 9 angka.</span>
-              <input value={phone} onChange={e=>setPhone(e.target.value.replace(/\D/g,"").slice(0,15))} inputMode="numeric" minLength={9} pattern="08[0-9]{7,13}" placeholder="08xxxxxxxxxx" disabled={detailsLocked} className={inputClass}/>
+              <span className="mt-1 block min-h-[16px] text-[11px] font-normal leading-4 text-slate-400">Wajib diawali 08 · minimal 10 digit · maksimal 13 digit.</span>
+              <input value={phone} onChange={e=>setPhone(e.target.value.replace(/\D/g,"").slice(0,13))} inputMode="numeric" minLength={10} maxLength={13} pattern="08[0-9]{8,11}" placeholder="Contoh: 081234567890" disabled={detailsLocked} className={inputClass}/>
             </label>
           </div>
 
@@ -539,6 +587,22 @@ export default function SubmissionForm() {
         <button disabled={busy || (brandable && !photosComplete)} onClick={submit} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#0B1D3A] px-5 py-4 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-40">
           <Send size={18}/>Submit & Selesaikan
         </button>
+      )}
+
+      {submitSuccess && (
+        <div className="fixed inset-0 z-[140] flex items-center justify-center bg-[#0B1D3A]/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl bg-white p-6 text-center shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-50 text-2xl font-bold text-emerald-600">✓</div>
+            <h3 className="mt-4 text-xl font-bold text-[#0B1D3A]">Pekerjaan Selesai</h3>
+            <p className="mt-3 text-sm leading-6 text-slate-600">Terima kasih sudah menyelesaikan pekerjaan, Kak <span className="font-semibold text-[#0B1D3A]">{picName || "PIC"}</span>.</p>
+            <div className="mt-4 rounded-2xl bg-emerald-50 px-4 py-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Total input hari ini</p>
+              <p className="mt-1 text-3xl font-bold text-emerald-700">{submitSuccess.count}</p>
+              <p className="mt-1 text-xs text-emerald-700/70">Periode 00.00 – 23.59</p>
+            </div>
+            <button type="button" onClick={()=>{ window.location.href="/app/my-work?status=done"; }} className="mt-5 w-full rounded-xl bg-[#0B1D3A] px-4 py-3 text-sm font-semibold text-white">Lihat Pekerjaan Selesai</button>
+          </div>
+        </div>
       )}
     </div>
   );

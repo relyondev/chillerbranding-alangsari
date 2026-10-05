@@ -66,21 +66,21 @@ Deno.serve(async (req) => {
       .eq("id", submissionId)
       .single();
 
-    if (error || !s || s.deleted_at || s.workflow_status !== "draft") {
-      throw new Error("submission_not_editable");
-    }
-
     const { data: p } = await admin
       .from("profiles")
-      .select("role")
+      .select("role,full_name,is_active")
       .eq("id", user.id)
       .single();
 
-    const can =
-      s.pic_user_id === user.id ||
-      ["admin", "super_admin"].includes(p?.role);
+    if (error || !s || s.deleted_at || !p?.is_active) {
+      throw new Error("submission_not_editable");
+    }
 
-    if (!can) throw new Error("forbidden");
+    const isAdmin = ["admin", "super_admin"].includes(p?.role);
+    const canEditDraft = s.workflow_status === "draft" && (s.pic_user_id === user.id || isAdmin);
+    const canEditDone = s.workflow_status === "done" && isAdmin;
+
+    if (!canEditDraft && !canEditDone) throw new Error("submission_not_editable");
 
     if (
       !s.has_chiller &&

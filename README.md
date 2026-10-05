@@ -1,10 +1,28 @@
+# Branding Chiller — V1.6.1
+
+Latest package keeps the V1.6.0 Salesman/Admin/Dashboard expansion and adds a small reporting hotfix: Stockpoint Terjamah percentage is now calculated in XLSX/PDF Summary using the active Stockpoint master for the selected Branch. It also includes a safe Salesman seed query for the client-provided master list.
+
+## Deploy V1.6.1
+
+1. Run `supabase/migrations/026_salesman_admin_edit_dashboard.sql`.
+2. Run `supabase/migrations/026_VERIFY.sql` and confirm objects/functions exist.
+3. Redeploy Edge Function `photo-upload` (DONE photo replacement for Admin/Super Admin).
+4. Run `npm install` then `npm run build`.
+5. Push to GitHub; Vercel auto deploy.
+6. Optional after migration 026: run `supabase/seeds/seed_salesmen_client_master.sql` to import Salesman rows whose Stockpoint already exists in the current master.
+7. QA Salesman CRUD/PIC autocomplete, Admin Edit vs Reopen, Audit Log, Dashboard, XLSX/PDF export, route guards.
+
+Existing data is preserved. No existing submissions/photos/users are deleted by migration 026.
+
+---
+
 # Branding Chiller
 
 Production web application for Relyon Production to manage Branding Chiller field operations from PIC input through documentation, reporting, Google Drive storage, and Google Spreadsheet synchronization.
 
 ## Release
 
-**Current package — V1.5.2**
+**Current package — V1.6.1**
 
 This package includes the V1.5.0 client revision, photo watermark processing, single-attempt GPS fallback, and frontend-only uppercase normalization for legacy values shown/exported from Data Pekerjaan.
 

@@ -17,14 +17,14 @@ export const roleNavigation: Record<AppRole, NavItem[]> = {
     { label: "Dashboard", href: "/app/dashboard", icon: "▦" },
     { label: "Pekerjaan", href: "/app/reporting", icon: "▤" },
     { label: "Manajemen User", href: "/app/users", icon: "♙" },
-    { label: "Master Data", href: "/app/master-data", icon: "◆" },
+    { label: "Data Stockpoint", href: "/app/master-data", icon: "◆" },
     commonAccount,
   ],
   admin: [
     { label: "Dashboard", href: "/app/dashboard", icon: "▦" },
     { label: "Pekerjaan", href: "/app/reporting", icon: "▤" },
     { label: "Manajemen User", href: "/app/users", icon: "♙" },
-    { label: "Master Data", href: "/app/master-data", icon: "◆" },
+    { label: "Data Stockpoint", href: "/app/master-data", icon: "◆" },
     commonAccount,
   ],
   pic: [

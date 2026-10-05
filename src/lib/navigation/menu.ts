@@ -1,7 +1,7 @@
 import type { AppRole } from "../../types/domain";
 import {
   LayoutDashboard, BriefcaseBusiness, FilePlus2, FileCheck2, FileClock,
-  Users, Database, ClipboardList, UserRound, ShieldCheck, BarChart3
+  Users, Database, ClipboardList, UserRound, ShieldCheck, BarChart3, ContactRound
 } from "lucide-react";
 
 export type NavItem = {
@@ -30,7 +30,8 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       label: "Data & Pengguna",
       icon: Database,
       items: [
-        { label: "Master Data", href: "/app/master-data", icon: Database },
+        { label: "Data Stockpoint", href: "/app/master-data", icon: Database },
+        { label: "Data Salesman", href: "/app/salesmen", icon: ContactRound },
         { label: "Manajemen User", href: "/app/users", icon: Users },
         { label: "Manajemen PIC", href: "/app/pics", icon: UserRound },
       ],
@@ -57,7 +58,8 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       label: "Data & Pengguna",
       icon: Database,
       items: [
-        { label: "Master Data", href: "/app/master-data", icon: Database },
+        { label: "Data Stockpoint", href: "/app/master-data", icon: Database },
+        { label: "Data Salesman", href: "/app/salesmen", icon: ContactRound },
         { label: "Manajemen User", href: "/app/users", icon: Users },
         { label: "Manajemen PIC", href: "/app/pics", icon: UserRound },
       ],
@@ -71,8 +73,9 @@ export const menuByRole: Record<AppRole, NavGroup[]> = {
       icon: BriefcaseBusiness,
       items: [
         { label: "Input Branding", href: "/app/submissions", icon: FilePlus2 },
-        { label: "Draft Saya", href: "/app/my-work?status=draft", icon: FileClock },
+        { label: "Pekerjaan Belum Selesai", href: "/app/my-work?status=draft", icon: FileClock },
         { label: "Pekerjaan Selesai", href: "/app/my-work?status=done", icon: FileCheck2 },
+        { label: "Data Salesman", href: "/app/my-salesmen", icon: ContactRound },
       ],
     },
     { items: [{ label: "Akun", href: "/app/account", icon: UserRound }] },

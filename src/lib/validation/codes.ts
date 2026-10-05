@@ -5,7 +5,7 @@ export const salesmanPart2Schema = z.string().regex(/^\d{3}$/, "Bagian kedua waj
 export const salesmanPart3Schema = z
   .string()
   .transform((value) => value.toUpperCase())
-  .pipe(z.string().regex(/^S\d{1,4}$/, "Bagian ketiga wajib S diikuti 1–4 angka."));
+  .pipe(z.string().regex(/^S\d{1,5}$/, "Bagian ketiga wajib S diikuti 1–5 angka."));
 
 export const storeCodePart1Schema = z.string().regex(/^\d{4}$/, "Bagian pertama kode toko wajib 4 digit.");
 export const storeCodePart2Schema = z.string().regex(/^\d{3}$/, "Bagian kedua kode toko wajib 3 digit.");

@@ -167,14 +167,16 @@ export default function AuditLogPage(){
   return <section>
     <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between"><div><h2 className="text-2xl font-bold text-[#0B1D3A]">Audit Log</h2><p className="mt-1 text-sm text-slate-500">Riwayat aksi penting yang tercatat oleh sistem.</p></div><button onClick={load} className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-semibold text-slate-600"><RefreshCw size={16} className={loading?"animate-spin":""}/>Perbarui</button></div>
 
-    <div className="brand-card mt-6 rounded-2xl p-4"><div className="grid gap-3 xl:grid-cols-[1.5fr_1fr_1fr_0.8fr_0.8fr_auto]">
-      <label className="relative"><Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari event, entity, detail..." className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--role-accent)]"/></label>
-      <select value={userFilter} onChange={e=>setUserFilter(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua User</option>{users.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select>
-      <select value={actionFilter} onChange={e=>setActionFilter(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua Aksi</option>{actions.map(a=><option key={a} value={a}>{pretty(a)}</option>)}</select>
-      <label className="block"><span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Dari tanggal</span><input type="date" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm"/></label>
-      <label className="block"><span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Sampai tanggal</span><input type="date" value={dateTo} onChange={e=>setDateTo(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm"/></label>
-      <button onClick={reset} className="rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600">Reset</button>
-    </div></div>
+    <div className="brand-card mt-6 rounded-2xl p-5">
+      <div className="grid items-end gap-3 md:grid-cols-2 xl:grid-cols-12">
+        <label className="relative xl:col-span-3"><Search size={17} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari event, entity, detail..." className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-4 text-sm outline-none focus:border-[var(--role-accent)]"/></label>
+        <select value={userFilter} onChange={e=>setUserFilter(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm xl:col-span-2"><option value="">Semua User</option>{users.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}</select>
+        <select value={actionFilter} onChange={e=>setActionFilter(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm xl:col-span-2"><option value="">Semua Aksi</option>{actions.map(a=><option key={a} value={a}>{pretty(a)}</option>)}</select>
+        <label className="block xl:col-span-2"><span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Dari tanggal</span><input type="date" value={dateFrom} onChange={e=>setDateFrom(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm"/></label>
+        <label className="block xl:col-span-2"><span className="mb-1 block text-[11px] font-semibold uppercase tracking-wide text-slate-400">Sampai tanggal</span><input type="date" value={dateTo} onChange={e=>setDateTo(e.target.value)} className="w-full rounded-xl border border-slate-200 px-3 py-3 text-sm"/></label>
+        <button onClick={reset} className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-600 xl:col-span-1">Reset</button>
+      </div>
+    </div>
 
     <div className="brand-card mt-5 overflow-hidden rounded-2xl">
       <div className="hidden overflow-x-auto md:block"><table className="min-w-[1180px] w-full text-sm"><thead className="bg-[var(--role-pale)]"><tr>{[
