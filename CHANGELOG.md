@@ -1,11 +1,9 @@
-# V1.7.1
+# V1.7.2 — Geolocation 50m UX Hotfix
 
-- Dashboard period selector now has a clear `Pilih Periode` label and cleaner alignment.
-- Removed redundant Dashboard title/subtitle duplication inside the dashboard body; active period is now the primary header context.
-- Removed manual refresh button because period changes already trigger automatic reload.
-- `Seluruh` displays the date range from the first completed submission through today.
-- Other period presets display their resolved calendar range.
-- Dashboard period calculations now use `submitted_at` converted to `Asia/Jakarta` (WIB), fixing early-morning submissions being grouped into the previous UTC date.
-- New submissions default `installation_date` using the WIB calendar date.
-- Replaced `Stockpoint Terjamah` KPI with `PIC Bekerja` (distinct PIC with DONE submissions in the active period).
-- Today sections and PIC monthly counts now use WIB completion date consistently.
+- Browser GPS initial fix is accepted at accuracy <= 50 meters.
+- During GPS acquisition the UI only shows a loading state (`Mencari lokasi...`).
+- Accuracy numbers / target messages are hidden during acquisition.
+- Once accepted, the UI shows a simple `Lokasi ditemukan` status.
+- Leaflet marker correction remains limited to maximum 3 meters from the raw GPS point.
+- Manual Google Maps fallback remains disabled.
+- Migration 029 replaces the previous <=5m DB check with <=50m without modifying existing submission data.
