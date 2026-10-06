@@ -1,11 +1,11 @@
-# V1.6.10 — Mobile Dashboard & PIC Salesman QA Hotfix
+# V1.7.1
 
-- PIC Data Salesman mobile layout reordered: Nama Salesman → full ID → Copy ID → Branch → Stockpoint.
-- Added dedicated mobile Salesman cards so Copy ID remains immediately visible without horizontal scrolling.
-- Copy ID continues to copy suffix digits only.
-- Dashboard completed-job cards made mobile-safe; Detail button moves below content on narrow screens.
-- PIC Dashboard simplified to Total Visit, Pemasangan Hari Ini, and Pemasangan Bulan Ini KPI cards.
-- PIC keeps all charts, Top 10 PIC, and Brandable / Tidak Brandable completed-job detail sections.
-- PIC hides photo completeness, extra KPI cards, weekly installation card, and Branch ranking.
-- Admin/Super/Client dashboard retains the full KPI/dashboard set.
-- Leaderboard tables now use contained horizontal overflow rather than spilling the page width.
+- Dashboard period selector now has a clear `Pilih Periode` label and cleaner alignment.
+- Removed redundant Dashboard title/subtitle duplication inside the dashboard body; active period is now the primary header context.
+- Removed manual refresh button because period changes already trigger automatic reload.
+- `Seluruh` displays the date range from the first completed submission through today.
+- Other period presets display their resolved calendar range.
+- Dashboard period calculations now use `submitted_at` converted to `Asia/Jakarta` (WIB), fixing early-morning submissions being grouped into the previous UTC date.
+- New submissions default `installation_date` using the WIB calendar date.
+- Replaced `Stockpoint Terjamah` KPI with `PIC Bekerja` (distinct PIC with DONE submissions in the active period).
+- Today sections and PIC monthly counts now use WIB completion date consistently.

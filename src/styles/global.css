@@ -122,3 +122,10 @@ html.dark .chart-force-light, .chart-force-light {
 }
 html.dark .chart-force-light h3, .chart-force-light h3 { color:#0f172a !important; }
 html.dark .chart-force-light .text-slate-900, .chart-force-light .text-slate-900 { color:#0f172a !important; }
+
+/* V1.7 table readability: alternating row surfaces across all app tables. */
+#app-protected-shell table tbody tr:nth-child(even) { background-color: rgba(241,245,249,.62); }
+#app-protected-shell table tbody tr:nth-child(odd) { background-color: rgba(255,255,255,.78); }
+html.dark #app-protected-shell table tbody tr:nth-child(even) { background-color: color-mix(in srgb,var(--dark-surface-2,#142640) 74%,transparent); }
+html.dark #app-protected-shell table tbody tr:nth-child(odd) { background-color: color-mix(in srgb,var(--dark-surface,#112039) 88%,transparent); }
+#app-protected-shell table thead { background-color: var(--role-pale); }

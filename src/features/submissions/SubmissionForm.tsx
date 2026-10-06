@@ -1,33 +1,15 @@
 import { notify } from "../../components/ui/ToastHost";
-import { CheckCircle2, LocateFixed, Save, Send, Store, MapPinned, ExternalLink, RefreshCw, UserRound } from "lucide-react";
+import { CheckCircle2, Save, Send, Store, MapPinned, UserRound } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { getSupabaseClient } from "../../lib/supabase/client";
 import { buildSalesmanCode, buildStoreCode } from "../../lib/validation/codes";
 import PhotoUploader from "./PhotoUploader";
+import GeoLocationPicker from "./GeoLocationPicker";
 
 type Geo = { latitude:number; longitude:number; accuracy:number } | null;
 
 const inputClass =
   "mt-2 w-full min-w-0 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-[#0B1D3A] outline-none transition placeholder:text-slate-400 focus:border-[var(--role-accent)] focus:ring-4 focus:ring-[var(--role-border)] disabled:bg-slate-50 disabled:text-slate-400";
-
-function isGoogleMapsUrl(value:string) {
-  try {
-    const url = new URL(value.trim());
-    if (url.protocol !== "https:" && url.protocol !== "http:") return false;
-
-    const host = url.hostname.toLowerCase().replace(/^www\./, "");
-    const path = url.pathname.toLowerCase();
-
-    if (host === "maps.app.goo.gl") return path.length > 1;
-    if (host === "goo.gl") return path.startsWith("/maps/") || path === "/maps";
-    if (host === "maps.google.com" || host === "maps.google.co.id") return true;
-    if (host === "google.com" || host === "google.co.id") return path === "/maps" || path.startsWith("/maps/");
-
-    return false;
-  } catch {
-    return false;
-  }
-}
 
 function uppercaseValue(value:string) {
   return value.toLocaleUpperCase("id-ID");
@@ -88,10 +70,6 @@ export default function SubmissionForm() {
   const [brandable,setBrandable] = useState(true);
   const [reason,setReason] = useState("");
   const [geo,setGeo] = useState<Geo>(null);
-  const [geoAttempts,setGeoAttempts] = useState(0);
-  const [geoError,setGeoError] = useState("");
-  const [locating,setLocating] = useState(false);
-  const [manualMapsUrl,setManualMapsUrl] = useState("");
   const [picCode,setPicCode] = useState("");
   const [picName,setPicName] = useState("");
   const [submission,setSubmission] = useState<any>(null);
@@ -174,9 +152,6 @@ export default function SubmissionForm() {
                 longitude: Number(draft.longitude),
                 accuracy: Number(draft.location_accuracy_meters ?? 0),
               });
-            } else if (draft.google_maps_url) {
-              setManualMapsUrl(draft.google_maps_url);
-              setGeoAttempts(1);
             }
           }
 
@@ -190,8 +165,6 @@ export default function SubmissionForm() {
 
   const salesman = useMemo(() => buildSalesmanCode(p1,p2,p3),[p1,p2,p3]);
   const storeCode = useMemo(() => buildStoreCode(storeP1,storeP2,storeP3),[storeP1,storeP2,storeP3]);
-  const manualMapsValid = manualMapsUrl.trim() ? isGoogleMapsUrl(manualMapsUrl) : false;
-  const manualAllowed = geoAttempts >= 1 && !geo;
   const selectedStockpoint = useMemo(() => stockpoints.find((item:any) => item.id === stockpointId) ?? null,[stockpoints,stockpointId]);
   const selectedSalesman = useMemo(() => salesmen.find((item:any)=>String(item.suffix).toUpperCase()===p3.toUpperCase()) ?? null,[salesmen,p3]);
   const detailsLocked = !stockpointId || !!submission;
@@ -240,39 +213,6 @@ export default function SubmissionForm() {
     }
   }
 
-  function locate() {
-    if (submission || locating || geo || geoAttempts >= 1) return;
-
-    if (!navigator.geolocation) {
-      setGeoAttempts(1);
-      setGeoError("Browser ini tidak mendukung geolocation. Gunakan link Google Maps manual.");
-      return;
-    }
-
-    setLocating(true);
-    setGeoError("");
-
-    navigator.geolocation.getCurrentPosition(
-      p => {
-        setGeo({
-          latitude:p.coords.latitude,
-          longitude:p.coords.longitude,
-          accuracy:p.coords.accuracy,
-        });
-        setManualMapsUrl("");
-        setGeoAttempts(0);
-        setGeoError("");
-        setLocating(false);
-        notify("success","Lokasi ditemukan","Koordinat perangkat berhasil disimpan.");
-      },
-      e => {
-        setGeoAttempts(1);
-        setGeoError(e.message || "Browser gagal mengambil lokasi. Silakan gunakan link Google Maps manual.");
-        setLocating(false);
-      },
-      { enableHighAccuracy:true, timeout:15000, maximumAge:0 },
-    );
-  }
 
   async function saveDraft() {
     if (!stockpointId) return notify("error","Periksa kembali","Pilih Stockpoint.");
@@ -281,7 +221,7 @@ export default function SubmissionForm() {
     if (!/^S\d{1,5}$/.test(p3)) return notify("error","ID Salesman belum lengkap","Isi 1–5 angka setelah huruf S.");
     if (!selectedSalesman) return notify("error","Salesman belum terdaftar","Pilih salesman dari autocomplete atau tambahkan nama salesman terlebih dahulu.");
     if (!/^\d{2,6}$/.test(storeP3)) return notify("error","Kode Toko belum valid","Bagian terakhir Kode Toko wajib 2–6 digit angka.");
-    if (manualMapsUrl.trim() && !manualMapsValid) return notify("error","Link Maps tidak valid","Gunakan link Google Maps yang valid.");
+    if (!geo) return notify("error","Lokasi wajib diambil","Ambil titik GPS dengan akurasi maksimal ±5 meter sebelum menyimpan draft.");
     if (!brandable && !reason.trim()) return notify("error","Periksa kembali","Alasan toko tidak di branding wajib diisi.");
 
     if (!/^08\d{8,11}$/.test(phone)) {
@@ -311,7 +251,7 @@ export default function SubmissionForm() {
         p_latitude:geo?.latitude ?? null,
         p_longitude:geo?.longitude ?? null,
         p_location_accuracy_meters:geo?.accuracy ?? null,
-        p_google_maps_url:geo ? null : manualMapsUrl.trim(),
+        p_google_maps_url:null,
         p_store_type:storeType,
         p_has_chiller:hasChiller === true,
         p_branding_status:brandable ? "brandable" : "not_brandable",
@@ -481,36 +421,12 @@ export default function SubmissionForm() {
             <textarea value={address} onChange={e=>setAddress(e.target.value)} minLength={20} placeholder="Alamat lengkap toko" disabled={detailsLocked} className={inputClass} rows={3}/>
           </label>
 
-          <div className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-            <div className="flex items-center gap-2">
+          <div>
+            <div className="mb-2 flex items-center gap-2">
               <MapPinned size={17} className="text-[var(--role-accent)]"/>
-              <p className="text-sm font-semibold text-slate-600">Titik GPS / GMaps</p>
+              <p className="text-sm font-semibold text-slate-600">Titik GPS</p>
             </div>
-            <p className="mt-1 text-xs text-slate-400">Lokasi bersifat opsional. Sistem mencoba GPS 1 kali. Jika gagal, masukkan link Google Maps manual.</p>
-            <div className="mt-3 flex flex-wrap items-center gap-3">
-              <button type="button" onClick={locate} disabled={detailsLocked || locating || !!geo || geoAttempts >= 1} className="inline-flex items-center gap-2 rounded-xl bg-[var(--role-accent)] px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">
-                {locating ? <RefreshCw size={17} className="animate-spin"/> : <LocateFixed size={17}/>}
-                {locating ? "Mengambil Lokasi..." : geoAttempts > 0 ? "GPS Tidak Berhasil" : "Ambil Lokasi Saat Ini"}
-              </button>
-              {geo && <span className="rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-700">✓ {geo.latitude.toFixed(6)}, {geo.longitude.toFixed(6)} · ±{Math.round(geo.accuracy)} m</span>}
-              {geo && (
-                <div className="mt-1 w-full overflow-hidden rounded-2xl border border-[var(--role-border)]">
-                  <iframe title="Preview lokasi Branding Chiller" src={`https://www.google.com/maps?q=${geo.latitude},${geo.longitude}&z=17&output=embed`} className="h-64 w-full border-0 sm:h-72" loading="lazy" referrerPolicy="no-referrer-when-downgrade"/>
-                </div>
-              )}
-            </div>
-            {!geo && geoError && <p className="mt-3 text-xs text-amber-700">Lokasi belum berhasil: {geoError}</p>}
-            {manualAllowed && (
-              <div className="mt-4 rounded-2xl border border-dashed border-[var(--role-border)] bg-white p-4">
-                <label className="block text-sm font-semibold text-slate-600">
-                  Link Google Maps Manual
-                  <span className="mt-1 block text-[11px] font-normal leading-4 text-slate-400">Buka Google Maps → pilih lokasi toko → Bagikan → Salin link.</span>
-                  <input value={manualMapsUrl} onChange={(e)=>setManualMapsUrl(e.target.value)} disabled={detailsLocked} placeholder="https://maps.app.goo.gl/xxxxxxxx" className={`${inputClass} ${manualMapsUrl && !manualMapsValid ? "border-red-300 focus:border-red-400 focus:ring-red-100" : ""}`}/>
-                </label>
-                {manualMapsUrl && !manualMapsValid && <p className="mt-2 text-xs text-red-500">Link belum dikenali sebagai link Google Maps.</p>}
-                {manualMapsValid && <a href={manualMapsUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-[var(--role-accent)]"><ExternalLink size={13}/>Cek link Google Maps</a>}
-              </div>
-            )}
+            <GeoLocationPicker value={geo} disabled={detailsLocked} onChange={setGeo}/>
           </div>
 
           <div className="grid items-start gap-x-6 gap-y-5 lg:grid-cols-2">
