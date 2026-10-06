@@ -20,10 +20,19 @@ export default function GeoLocationPicker({value,disabled=false,onChange}:Props)
     setTimeout(()=>mapRef.current?.invalidateSize(),50);
   }
   useEffect(()=>{if(value&&rawRef.current&&!mapRef.current)renderMap(rawRef.current,value);},[value]);
-  useEffect(()=>()=>{mapRef.current?.remove();mapRef.current=null;},[]);
+  useEffect(()=>()=>{resetMap();},[]);
+  function resetMap(){
+    if(markerRef.current){markerRef.current.remove();markerRef.current=null;}
+    if(mapRef.current){mapRef.current.remove();mapRef.current=null;}
+    rawRef.current=null;
+  }
   function locate(){
     if(disabled||locating)return; if(!navigator.geolocation){setError("Browser tidak mendukung GPS.");return;}
-    setLocating(true);setError("");setAdjustment(0);onChange(null); let best:Geo|null=null; let watchId:number; const timer=window.setTimeout(()=>{navigator.geolocation.clearWatch(watchId);setLocating(false);setError(best?`Akurasi terbaik ±${Math.round(best.accuracy)} m. Maksimal yang diterima ±50 m. Pindah ke area lebih terbuka lalu coba lagi.`:"Lokasi tidak berhasil didapat. Pindah ke area lebih terbuka lalu coba lagi.");},20000);
+    // The map container is conditionally rendered from `value`. Remove the old
+    // Leaflet instance before clearing `value`, otherwise Leaflet keeps a
+    // reference to the detached DOM node and a retake renders a blank map.
+    resetMap();
+    setLocating(true);setError("");setAdjustment(0);setAccuracy(null);onChange(null); let best:Geo|null=null; let watchId:number; const timer=window.setTimeout(()=>{navigator.geolocation.clearWatch(watchId);setLocating(false);setError(best?`Akurasi terbaik ±${Math.round(best.accuracy)} m. Maksimal yang diterima ±50 m. Pindah ke area lebih terbuka lalu coba lagi.`:"Lokasi tidak berhasil didapat. Pindah ke area lebih terbuka lalu coba lagi.");},20000);
     watchId=navigator.geolocation.watchPosition(async p=>{const g={latitude:p.coords.latitude,longitude:p.coords.longitude,accuracy:p.coords.accuracy}; if(!best||g.accuracy<best.accuracy)best=g;setAccuracy(g.accuracy);if(g.accuracy<=50){window.clearTimeout(timer);navigator.geolocation.clearWatch(watchId);rawRef.current=g;setLocating(false);setError("");onChange(g);await renderMap(g,g);}},e=>{window.clearTimeout(timer);navigator.geolocation.clearWatch(watchId);setLocating(false);setError(e.message||"GPS gagal mengambil lokasi.");},{enableHighAccuracy:true,maximumAge:0,timeout:20000});
   }
   return <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
