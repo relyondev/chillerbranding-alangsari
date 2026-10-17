@@ -1,6 +1,6 @@
 {
   "name": "branding-chiller-app",
-  "version": "1.7.1",
+  "version": "1.7.5",
   "private": true,
   "type": "module",
   "scripts": {

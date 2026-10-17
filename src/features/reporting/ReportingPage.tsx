@@ -38,6 +38,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
   const [reopenTarget,setReopenTarget] = useState<Row|null>(null);
   const [editTarget,setEditTarget] = useState<Row|null>(null);
   const [reopenReason,setReopenReason] = useState("");
+  const [reopenCategory,setReopenCategory] = useState("");
   const [reopening,setReopening] = useState(false);
   const [sortKey,setSortKey] = useState("created_at");
   const [sortDir,setSortDir] = useState<SortDir>("desc");
@@ -142,8 +143,8 @@ export default function ReportingPage({ operational = false }: { operational?: b
     const pd=photos.denominator||0;
     return [
       {Metric:"Total Visit",Jumlah:total,Persentase:total?1:0},
-      {Metric:"Bisa Dibranding",Jumlah:brandable,Persentase:percentNumber(brandable,total)},
-      {Metric:"Tidak Bisa Dibranding",Jumlah:notBrandable,Persentase:percentNumber(notBrandable,total)},
+      {Metric:"Dibranding",Jumlah:brandable,Persentase:percentNumber(brandable,total)},
+      {Metric:"Tidak Dibranding",Jumlah:notBrandable,Persentase:percentNumber(notBrandable,total)},
       {Metric:"Stockpoint Terjamah",Jumlah:touched,Persentase:percentNumber(touched,stockpointTotal)},
       {Metric:"Warung",Jumlah:warung,Persentase:percentNumber(warung,total)},
       {Metric:"Grosir",Jumlah:grosir,Persentase:percentNumber(grosir,total)},
@@ -162,7 +163,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
     const latestInput=sortedRows.reduce((latest:number,row:any)=>Math.max(latest,row.created_at?new Date(row.created_at).getTime():0),0);
     const exportedAt=new Date();
     const summaryAoa:any[][]=[
-      ["Summary Data Branding Chiller"],
+      ["Summary Data Branding Toko Chiller"],
       ["Update",latestInput?new Date(latestInput):"—"],
       ["Exported at",exportedAt],
       ["Branch",branch||"SEMUA BRANCH"],
@@ -212,8 +213,8 @@ export default function ReportingPage({ operational = false }: { operational?: b
 
   function brandingFilterLabel(){
     if(!status) return "Semua Status Branding";
-    if(status==="brandable") return "Bisa Dibranding";
-    if(status==="not_brandable") return "Tidak Bisa Dibranding";
+    if(status==="brandable") return "Dibranding";
+    if(status==="not_brandable") return "Tidak Dibranding";
     return upperValue(status);
   }
 
@@ -224,7 +225,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
     if (typeof (doc as any).autoTable !== "function") throw new Error("PDF table engine gagal dimuat.");
     const logo=await imageDataUrl("/hm-hanzi-logo.png");
     if(logo) doc.addImage(logo,"PNG",14,8,42,14);
-    doc.setFontSize(15);doc.setFont("helvetica","bold");doc.text("Laporan Pemasangan Branding Chiller Alang Sari",14,29);
+    doc.setFontSize(15);doc.setFont("helvetica","bold");doc.text("Laporan Pemasangan Branding Toko Chiller Alang Sari",14,29);
     doc.setFontSize(9);doc.setFont("helvetica","normal");
     const latestInput=sortedRows.reduce((latest:number,row:any)=>Math.max(latest,row.submitted_at?new Date(row.submitted_at).getTime():(row.created_at?new Date(row.created_at).getTime():0)),0);
     const exportedAt=new Date();
@@ -258,13 +259,14 @@ export default function ReportingPage({ operational = false }: { operational?: b
 
   async function confirmReopen(){
     if(!reopenTarget) return;
+    if(!reopenCategory){notify("warning","Kategori wajib dipilih","Pilih kategori alasan reopen.");return;}
     if(!reopenReason.trim()){notify("warning","Alasan wajib diisi","Tuliskan alasan pekerjaan dibuka kembali.");return;}
     setReopening(true);
     try{
       const supabase=getSupabaseClient(); const {data:{session}}=await supabase.auth.getSession();
-      const res=await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/reopen-submission`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${session?.access_token}`},body:JSON.stringify({submission_id:reopenTarget.id,reason:reopenReason.trim()})});
+      const res=await fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/reopen-submission`,{method:"POST",headers:{"Content-Type":"application/json",Authorization:`Bearer ${session?.access_token}`},body:JSON.stringify({submission_id:reopenTarget.id,reason:`[REOPEN - ${reopenCategory}] ${reopenReason.trim()}`})});
       const payload=await res.json().catch(()=>({})); if(!res.ok) throw new Error(payload?.error || "Reopen belum berhasil.");
-      notify("success","Pekerjaan berhasil direopen","Foto wajib diupload ulang oleh PIC."); setReopenTarget(null);setReopenReason("");await load();
+      notify("success","Pekerjaan berhasil direopen","Foto wajib diupload ulang oleh PIC."); setReopenTarget(null);setReopenReason("");setReopenCategory("");await load();
     }catch(error){notify("error","Reopen gagal",error instanceof Error?error.message:"Reopen belum berhasil.");}finally{setReopening(false);}
   }
 
@@ -287,7 +289,7 @@ export default function ReportingPage({ operational = false }: { operational?: b
     <div className="brand-card mt-6 rounded-2xl p-5"><div className="grid gap-3 md:grid-cols-5">
       <label className="relative md:col-span-2"><Search size={17} className="absolute left-3 top-3.5 text-slate-400"/><input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Cari nama/kode toko, pemilik, HP..." className="w-full rounded-xl border border-slate-200 py-3 pl-10 pr-3 text-sm"/></label>
       <select value={branch} onChange={e=>setBranch(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua Branch</option><option>BGR</option><option>SMG</option><option>YOG</option><option>SBY</option><option>MLG</option></select>
-      <select value={status} onChange={e=>setStatus(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua Status</option><option value="brandable">Bisa Dibranding</option><option value="not_brandable">Tidak Bisa Dibranding</option></select>
+      <select value={status} onChange={e=>setStatus(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua Status</option><option value="brandable">Dibranding</option><option value="not_brandable">Tidak Dibranding</option></select>
       <select value={workflowStatus} onChange={e=>setWorkflowStatus(e.target.value)} className="rounded-xl border border-slate-200 px-3 py-3 text-sm"><option value="">Semua Status Pekerjaan</option><option value="draft">Draft</option><option value="reopen">Reopen</option><option value="done">Done</option></select>
     </div><div className="mt-4 flex flex-wrap gap-2"><button onClick={()=>{setSearch("");setWorkflowStatus("");setBranch("");setStatus("");}} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600"><RotateCcw size={16}/>Reset</button><button onClick={load} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600"><RefreshCw size={16} className={loading?"animate-spin":""}/>Perbarui</button></div></div>
 
@@ -298,13 +300,13 @@ export default function ReportingPage({ operational = false }: { operational?: b
         <td className="px-4 py-3">{(r.google_maps_url||(r.latitude!=null&&r.longitude!=null))?<a className="inline-flex items-center gap-1 font-semibold text-[var(--role-accent)]" target="_blank" rel="noreferrer" href={r.google_maps_url||`https://www.google.com/maps?q=${r.latitude},${r.longitude}`}><MapPin size={15}/>Maps</a>:<span className="text-slate-400">—</span>}</td>
         <td className="px-4 py-3">{displayUpper(r.store_type)}</td><td className="px-4 py-3">{r.has_chiller?"YA":"TIDAK"}</td><td className="px-4 py-3">{displayUpper(r.branding_status)}</td><td className="px-4 py-3"><span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${r.workflow_status==="done"?"bg-emerald-50 text-emerald-700":r.reopened_at?"bg-sky-50 text-sky-700":"bg-amber-50 text-amber-700"}`}>{r.workflow_status==="done"?"DONE":r.reopened_at?"REOPEN":"DRAFT"}</span></td>
         <td className="px-4 py-3"><a href={`/app/photos?submission=${r.id}`} className="inline-flex items-center gap-1 font-semibold text-[var(--role-accent)]"><Images size={15}/>Lihat</a></td>
-        <td className="px-4 py-3">{operational&&["admin","super_admin"].includes(role??"")&&r.workflow_status==="done"?<div className="flex gap-2"><button onClick={()=>setEditTarget(r)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">Edit</button><button onClick={()=>{setReopenTarget(r);setReopenReason("");}} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-700"><Undo2 size={14}/>Reopen</button></div>:<span className="text-xs text-slate-400">—</span>}</td>
+        <td className="px-4 py-3">{operational&&["admin","super_admin"].includes(role??"")&&r.workflow_status==="done"?<div className="flex gap-2"><button onClick={()=>setEditTarget(r)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">Edit</button><button onClick={()=>{setReopenTarget(r);setReopenReason("");setReopenCategory("");}} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-700"><Undo2 size={14}/>Reopen</button></div>:<span className="text-xs text-slate-400">—</span>}</td>
       </tr>):<tr><td colSpan={18} className="px-5 py-12 text-center text-slate-400">Belum ada data.</td></tr>}</tbody></table></div>
       <div className="space-y-3 p-3 md:hidden">
         {pageRows.length?pageRows.map(r=><article key={r.id} className="mobile-data-card rounded-2xl border border-slate-200 bg-white p-4">
           <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="truncate font-semibold text-[#0B1D3A]">{displayUpper(r.store_name)}</p><p className="mt-1 text-xs text-slate-500">{displayUpper(r.store_code)} · {r.stockpoint_code} · {displayUpper(r.stockpoint_name)}</p></div><span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ${r.workflow_status==="done"?"bg-emerald-50 text-emerald-700":r.reopened_at?"bg-sky-50 text-sky-700":"bg-amber-50 text-amber-700"}`}>{r.workflow_status==="done"?"DONE":r.reopened_at?"REOPEN":"DRAFT"}</span></div>
           <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 text-sm"><div><dt className="mobile-label text-xs text-slate-400">Tanggal</dt><dd className="mt-1">{r.installation_date}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Branch</dt><dd className="mt-1">{displayUpper(r.branch_name)}</dd></div><div><dt className="mobile-label text-xs text-slate-400">PIC</dt><dd className="mt-1">{displayUpper(r.pic_name)}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Pemilik</dt><dd className="mt-1">{displayUpper(r.owner_name)}</dd></div><div><dt className="mobile-label text-xs text-slate-400">HP/WA</dt><dd className="mt-1">{r.owner_phone}</dd></div><div><dt className="mobile-label text-xs text-slate-400">Branding</dt><dd className="mt-1">{displayUpper(r.branding_status)}</dd></div></dl>
-          <div className="mt-4 flex flex-wrap gap-2">{(r.google_maps_url||(r.latitude!=null&&r.longitude!=null))&&<a className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-[var(--role-accent)]" target="_blank" rel="noreferrer" href={r.google_maps_url||`https://www.google.com/maps?q=${r.latitude},${r.longitude}`}><MapPin size={14}/>Maps</a>}<a href={`/app/photos?submission=${r.id}`} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-[var(--role-accent)]"><Images size={14}/>Foto</a>{operational&&["admin","super_admin"].includes(role??"")&&r.workflow_status==="done"&&<><button onClick={()=>setEditTarget(r)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">Edit</button><button onClick={()=>{setReopenTarget(r);setReopenReason("");}} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-700"><Undo2 size={14}/>Reopen</button></>}</div>
+          <div className="mt-4 flex flex-wrap gap-2">{(r.google_maps_url||(r.latitude!=null&&r.longitude!=null))&&<a className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-[var(--role-accent)]" target="_blank" rel="noreferrer" href={r.google_maps_url||`https://www.google.com/maps?q=${r.latitude},${r.longitude}`}><MapPin size={14}/>Maps</a>}<a href={`/app/photos?submission=${r.id}`} className="inline-flex items-center gap-1 rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-[var(--role-accent)]"><Images size={14}/>Foto</a>{operational&&["admin","super_admin"].includes(role??"")&&r.workflow_status==="done"&&<><button onClick={()=>setEditTarget(r)} className="rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700">Edit</button><button onClick={()=>{setReopenTarget(r);setReopenReason("");setReopenCategory("");}} className="inline-flex items-center gap-1 rounded-lg border border-amber-200 px-3 py-2 text-xs font-semibold text-amber-700"><Undo2 size={14}/>Reopen</button></>}</div>
         </article>):<div className="py-10 text-center text-sm text-slate-400">Belum ada data.</div>}
       </div>
       <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
@@ -315,6 +317,6 @@ export default function ReportingPage({ operational = false }: { operational?: b
 
     {editTarget&&<AdminEditDoneModal row={editTarget} onClose={()=>setEditTarget(null)} onSaved={async()=>{await load();}}/>}
 
-    {reopenTarget&&<div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1D3A]/50 p-4 backdrop-blur-sm"><div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><h3 className="text-lg font-bold text-[#0B1D3A]">Reopen pekerjaan</h3><p className="mt-1 text-sm text-slate-500">{displayUpper(reopenTarget.store_name)}</p></div><button type="button" onClick={()=>setReopenTarget(null)} className="rounded-xl border border-slate-200 p-2 text-slate-500"><X size={17}/></button></div><label className="mt-5 block text-sm font-semibold text-slate-600">Alasan reopen<textarea autoFocus value={reopenReason} onChange={e=>setReopenReason(e.target.value)} rows={4} placeholder="Jelaskan alasan pekerjaan dibuka kembali..." className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"/></label><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={()=>setReopenTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button><button type="button" disabled={reopening} onClick={confirmReopen} className="rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{reopening?"Memproses...":"Reopen Pekerjaan"}</button></div></div></div>}
+    {reopenTarget&&<div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0B1D3A]/50 p-4 backdrop-blur-sm"><div className="w-full max-w-lg rounded-3xl bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><h3 className="text-lg font-bold text-[#0B1D3A]">Reopen pekerjaan</h3><p className="mt-1 text-sm text-slate-500">{displayUpper(reopenTarget.store_name)}</p></div><button type="button" onClick={()=>setReopenTarget(null)} className="rounded-xl border border-slate-200 p-2 text-slate-500"><X size={17}/></button></div><label className="mt-5 block text-sm font-semibold text-slate-600">Kategori Alasan<select value={reopenCategory} onChange={e=>setReopenCategory(e.target.value)} className="mt-2 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"><option value="">PILIH KATEGORI ALASAN</option><option value="TUTUP PERMANEN">TUTUP PERMANEN</option><option value="PINDAH LOKASI">PINDAH LOKASI</option><option value="PERBAIKAN">PERBAIKAN</option></select></label><label className="mt-4 block text-sm font-semibold text-slate-600">Alasan reopen<textarea autoFocus value={reopenReason} onChange={e=>setReopenReason(e.target.value)} rows={4} placeholder="Jelaskan alasan pekerjaan dibuka kembali..." className="mt-2 w-full rounded-xl border border-slate-200 px-4 py-3 font-normal outline-none focus:border-[var(--role-accent)]"/></label><div className="mt-5 flex justify-end gap-2"><button type="button" onClick={()=>setReopenTarget(null)} className="rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-semibold text-slate-600">Batal</button><button type="button" disabled={reopening} onClick={confirmReopen} className="rounded-xl bg-[var(--role-accent)] px-4 py-2.5 text-sm font-semibold text-white disabled:opacity-50">{reopening?"Memproses...":"Reopen Pekerjaan"}</button></div></div></div>}
   </section>;
 }

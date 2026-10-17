@@ -51,10 +51,10 @@ export default function LoginForm() {
     <form className="mt-7 space-y-7" onSubmit={onSubmit}>
       {inactiveLogout && <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-800">Sesi berakhir otomatis karena tidak ada aktivitas selama 2 jam. Silakan login kembali.</div>}
       <div>
-        <label htmlFor="email" className="block text-[16px] font-semibold text-[#0B1D3A]">Email</label>
+        <label htmlFor="email" className="block text-[16px] font-semibold text-[#0B1D3A]">Email / Username</label>
         <div className="relative mt-3">
           <Mail size={21} className="pointer-events-none absolute left-5 top-1/2 -translate-y-1/2 text-[#9AAAC0]" />
-          <input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="nama@email.com" autoComplete="email" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-5 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#d71920] focus:bg-white focus:ring-4 focus:ring-[#ffd1d3]/55" />
+          <input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="Masukkan email / username" autoComplete="email" required className="h-[64px] w-full rounded-2xl border border-[#C8D5E7] bg-[#F9FBFE] pl-14 pr-5 text-[17px] text-[#0B1D3A] outline-none transition placeholder:text-[#9CA8BB] focus:border-[#d71920] focus:bg-white focus:ring-4 focus:ring-[#ffd1d3]/55" />
         </div>
       </div>
 

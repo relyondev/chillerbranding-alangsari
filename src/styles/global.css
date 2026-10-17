@@ -73,7 +73,7 @@ html.dark footer { color:var(--dark-subtle,#8294ab); }
 html.dark .mobile-data-card { background:var(--dark-surface,#112039); border-color:var(--dark-border,#2a405b); }
 html.dark .mobile-data-card .mobile-label { color:var(--dark-subtle,#8294ab); }
 
-/* Branding Chiller role themes */
+/* Branding Toko Chiller role themes */
 :root {
   --role-accent:#1565ef;
   --role-accent-hover:#0f56d5;
@@ -129,3 +129,39 @@ html.dark .chart-force-light .text-slate-900, .chart-force-light .text-slate-900
 html.dark #app-protected-shell table tbody tr:nth-child(even) { background-color: color-mix(in srgb,var(--dark-surface-2,#142640) 74%,transparent); }
 html.dark #app-protected-shell table tbody tr:nth-child(odd) { background-color: color-mix(in srgb,var(--dark-surface,#112039) 88%,transparent); }
 #app-protected-shell table thead { background-color: var(--role-pale); }
+
+/* V1.7.5 PIC dark-mode readability polish */
+html.dark[data-role="pic"] {
+  --dark-bg:#1d0b0d;
+  --dark-bg-2:#281014;
+  --dark-surface:#35171b;
+  --dark-surface-2:#402026;
+  --dark-border:#754047;
+  --dark-text:#fff8f8;
+  --dark-muted:#efc9cc;
+  --dark-subtle:#d6a4a9;
+  --dark-input:#2e1418;
+}
+html.dark[data-role="pic"] .bg-slate-50,
+html.dark[data-role="pic"] [class~="bg-slate-50"] {
+  background-color:#3a1b20 !important;
+}
+html.dark[data-role="pic"] .text-slate-400 { color:#dcb2b6 !important; }
+html.dark[data-role="pic"] .text-slate-500 { color:#e3c0c3 !important; }
+html.dark[data-role="pic"] .text-slate-600 { color:#f0d5d7 !important; }
+html.dark[data-role="pic"] input:disabled,
+html.dark[data-role="pic"] select:disabled,
+html.dark[data-role="pic"] textarea:disabled {
+  background:#412126 !important;
+  color:#f2d6d8 !important;
+  opacity:1;
+}
+html.dark[data-role="pic"] .pic-primary-action { color:#fff !important; background:var(--role-accent) !important; }
+html.dark[data-role="pic"] {
+  --role-accent:#ff4d55;
+  --role-accent-hover:#ff646b;
+  --role-pale:#4a2429;
+  --role-border:#8a4a52;
+}
+
+html[data-role="pic"] .pic-primary-action { color:#fff !important; }

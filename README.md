@@ -1,68 +1,30 @@
-# Branding Chiller — V1.6.1
-
-Latest package keeps the V1.6.0 Salesman/Admin/Dashboard expansion and adds a small reporting hotfix: Stockpoint Terjamah percentage is now calculated in XLSX/PDF Summary using the active Stockpoint master for the selected Branch. It also includes a safe Salesman seed query for the client-provided master list.
-
-## Deploy V1.6.1
-
-1. Run `supabase/migrations/026_salesman_admin_edit_dashboard.sql`.
-2. Run `supabase/migrations/026_VERIFY.sql` and confirm objects/functions exist.
-3. Redeploy Edge Function `photo-upload` (DONE photo replacement for Admin/Super Admin).
-4. Run `npm install` then `npm run build`.
-5. Push to GitHub; Vercel auto deploy.
-6. Optional after migration 026: run `supabase/seeds/seed_salesmen_client_master.sql` to import Salesman rows whose Stockpoint already exists in the current master.
-7. QA Salesman CRUD/PIC autocomplete, Admin Edit vs Reopen, Audit Log, Dashboard, XLSX/PDF export, route guards.
-
-Existing data is preserved. No existing submissions/photos/users are deleted by migration 026.
-
----
-
 # Branding Chiller
 
-Production web application for Relyon Production to manage Branding Chiller field operations from PIC input through documentation, reporting, Google Drive storage, and Google Spreadsheet synchronization.
+Production web application for Hanz Management / Relyon operations to manage Branding Chiller field work from PIC input through documentation, reporting, Google Drive storage, and Google Spreadsheet synchronization.
 
-## Release
+## Current Baseline
 
-**Current package — V1.6.1**
+**V1.7.4 — repository cleanup baseline**
 
-This package includes the V1.5.0 client revision, photo watermark processing, single-attempt GPS fallback, and frontend-only uppercase normalization for legacy values shown/exported from Data Pekerjaan.
+Runtime behavior is based on V1.7.3. V1.7.4 only normalizes repository structure, documentation, migration history notes, and version metadata; it does not intentionally change production business logic.
 
 ## Stack
 
-- Astro + TypeScript
-- React islands
-- Tailwind CSS
-- Poppins + Lucide React
+- Astro + TypeScript + React
+- Tailwind CSS + Poppins + Lucide React
 - Supabase Auth / PostgreSQL / RPC / RLS / Edge Functions
 - Google Apps Script
-- Google Drive (private source storage)
-- Google Spreadsheet
+- Private Google Drive + Google Spreadsheet integration
 - Vercel
 
-## Main Roles
+## Roles
 
 - Super Admin
 - Admin
 - PIC
 - Klien
 
-See [docs/ROLES_AND_WORKFLOWS.md](docs/ROLES_AND_WORKFLOWS.md).
-
-## Core Workflow
-
-1. PIC logs in and creates a branding draft.
-2. PIC selects an assigned Stockpoint and fills store/salesman data.
-3. Location is attempted once through browser geolocation. If it fails, a validated Google Maps link can be entered manually.
-4. Brandable stores upload required photos; new uploads are resized/compressed and stamped with the Hanzi Management field-documentation watermark in the browser before upload.
-5. PIC submits the work as DONE.
-6. Data can be reviewed, exported, synchronized to Spreadsheet, and reopened by Admin/Super Admin when required.
-
-## Production Resources
-
-- Supabase project ref: `mengddxsnoczoibuwmnr`
-- GitHub repository: `relyondev/branding-ops-app`
-- Vercel project: `relyondev/branding-ops-app`
-
-IDs, endpoint URLs, and secrets must not be committed. Use the environment/secrets setup described in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md).
+See [`docs/ROLES_AND_WORKFLOWS.md`](docs/ROLES_AND_WORKFLOWS.md).
 
 ## Local Development
 
@@ -79,78 +41,71 @@ npm run build
 
 ## Environment
 
-Frontend only:
+Only browser-safe variables may use the `PUBLIC_` prefix:
 
 ```env
 PUBLIC_SUPABASE_URL=
 PUBLIC_SUPABASE_ANON_KEY=
 ```
 
-Never place Supabase service-role keys, HMAC secrets, Drive IDs, Spreadsheet IDs, or cron secrets in frontend environment variables.
+Never commit `.env`, Supabase service-role keys, HMAC secrets, cron secrets, or private integration credentials. See [`docs/ENV_SETUP.md`](docs/ENV_SETUP.md).
 
-## Database Migrations
+## Database
 
-Migrations are stored in `supabase/migrations/` and must be applied in numeric order. For this V1.5.2 package, an environment that already has migrations 001–024 applied only needs migration **025**. No migration 026 is required.
+Production migration files are stored in `supabase/migrations/` and currently run through **029**.
 
-See [docs/DATABASE.md](docs/DATABASE.md).
+Migration **014** is represented by a historical marker because the original manually applied Stockpoint seed SQL was not preserved in the repository. Existing production Stockpoint data is not modified by that marker. See [`docs/DATABASE.md`](docs/DATABASE.md).
+
+Do **not** use `supabase db reset` against production.
+
+## Edge Functions
+
+Current source contains:
+
+- `admin-create-user`
+- `admin-reset-password`
+- `integration-runner`
+- `photo-upload`
+- `photo-view`
+- `reopen-submission`
+- `spreadsheet-sync`
 
 ## Documentation
 
-- [Architecture](docs/ARCHITECTURE.md)
-- [Roles & Workflows](docs/ROLES_AND_WORKFLOWS.md)
-- [Database & Migrations](docs/DATABASE.md)
-- [Integrations](docs/INTEGRATIONS.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Operations & Recovery](docs/OPERATIONS.md)
-- [Security](docs/SECURITY.md)
-- [QA Checklist](docs/QA_CHECKLIST.md)
-- [V1 Final Lock](docs/V1_FINAL_LOCK.md)
-- [Release Steps](docs/RELEASE_STEPS.md)
-- [Changelog](CHANGELOG.md)
+Current operational docs:
+
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)
+- [`docs/DATABASE.md`](docs/DATABASE.md)
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
+- [`docs/DEPLOYMENT_CHECKLIST.md`](docs/DEPLOYMENT_CHECKLIST.md)
+- [`docs/ENV_SETUP.md`](docs/ENV_SETUP.md)
+- [`docs/INTEGRATIONS.md`](docs/INTEGRATIONS.md)
+- [`docs/OPERATIONS.md`](docs/OPERATIONS.md)
+- [`docs/QA_CHECKLIST.md`](docs/QA_CHECKLIST.md)
+- [`docs/RELEASE_STEPS.md`](docs/RELEASE_STEPS.md)
+- [`docs/ROLES_AND_WORKFLOWS.md`](docs/ROLES_AND_WORKFLOWS.md)
+- [`docs/SALESMAN_IMPORT.md`](docs/SALESMAN_IMPORT.md)
+- [`docs/SECURITY.md`](docs/SECURITY.md)
+- [`docs/THEME_AND_MOBILE.md`](docs/THEME_AND_MOBILE.md)
+- [`docs/USER_MANAGEMENT.md`](docs/USER_MANAGEMENT.md)
+- [`docs/RELEASE_HISTORY.md`](docs/RELEASE_HISTORY.md)
+
+Historical hotfix/release notes are retained under `docs/archive/` so the project root stays readable without deleting useful history.
+
+## Production Resources
+
+Repository and project identifiers may be documented, but credentials and secrets must remain outside Git.
+
+- GitHub: `relyondev/branding-ops-app`
+- Supabase project ref: `mengddxsnoczoibuwmnr`
+- Vercel project: `relyondev/branding-ops-app`
 
 ## Ownership
 
 Development by Hanz Management in collaboration with Relyon.
 
-
-## V1.1.0 Admin UX
-Lihat CHANGELOG.md dan `supabase/migrations/022_admin_create_stockpoint.sql`.
+- [`docs/REPOSITORY_MAINTENANCE.md`](docs/REPOSITORY_MAINTENANCE.md)
 
 
-## V1.2.0
-Admin password reset, role create restriction, dark/light theme, and mobile responsive table cards.
-
-
-### V1.2.1 hotfix
-Desktop Data Pekerjaan table now preserves all columns with contained horizontal scrolling.
-
-
-## V1.3.0 Frontend Rebrand
-- HM Hanzi Management visual identity on login.
-- Role color themes: PIC red, Admin/Super Admin charcoal, Client existing blue.
-- Light is the default theme; dark remains available.
-- PIC form autofills Stockpoint code segments into Store Code and Salesman ID.
-- Chiller unavailable automatically marks the work as not brandable and skips photo requirements.
-- Successful browser geolocation displays an inline map preview.
-- PIC sidebar displays PIC full name and PIC ID.
-- Data Pekerjaan shows Stockpoint ID before Stockpoint name.
-- Photo viewer supports click-to-open modal preview.
-- Reporting actions are separated into Sync Spreadsheet, Open Spreadsheet, and Export.
-
-Backend follow-up: the new Salesman suffix UI allows `S` + up to 4 digits (5 characters total). Existing database validation must be updated before using 5-character suffixes in production.
-
-
-### V1.3.1 frontend QA polish
-Stockpoint-first form lock, clearer Salesman suffix UX, stable role theming, sidebar identity labels, HM branding placement, and navigable photo modal.
-
-
-## V1.4.0
-PIC Stockpoint assignment management and backend enforcement for Stockpoint-derived Kode Toko / ID Salesman are documented in `docs/V1_4_0_ASSIGNMENT_BACKEND.md`.
-
-
-## V1.4.1
-QA update: Manajemen User dan Manajemen PIC dipisah, chained filter assignment PIC, light-mode modal fix, dan Audit Log diaktifkan. Tidak ada migration baru.
-
-### V1.4.3 QA polish
-- White chart surfaces in all themes with high-contrast chart colors.
-- Improved Audit Log modal, date range labels, and sortable headers.
+## Current UI hotfix
+Baseline package version: **1.7.5**. This release is frontend-only and does not require a database migration.

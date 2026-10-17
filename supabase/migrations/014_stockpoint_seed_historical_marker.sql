@@ -1,0 +1,15 @@
+-- 014_stockpoint_seed_historical_marker.sql
+--
+-- HISTORICAL MARKER ONLY.
+-- Migration 014 was the production Stockpoint master seed that was applied
+-- manually during the early clean-slate rollout. The original generated seed
+-- SQL was not preserved in this repository, while the production data itself
+-- continued to exist and later migrations depend on it.
+--
+-- This file intentionally performs NO INSERT/UPDATE/DELETE so it is safe on
+-- the existing production database and closes the migration numbering gap.
+--
+-- IMPORTANT FOR A BRAND-NEW DATABASE:
+-- Do not assume this marker seeds Stockpoints. Restore/import the approved
+-- Stockpoint master separately before migrations/features that require it.
+select 1 as migration_014_historical_marker;

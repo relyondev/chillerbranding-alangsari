@@ -143,7 +143,7 @@ export default function RoleAwareSidebar() {
           <div className="rounded-xl bg-black/80 px-3 py-2.5">
             <img src="/hm-hanzi-logo.png" alt="HM Hanzi Management" className="mx-auto h-9 w-auto max-w-full object-contain" />
           </div>
-          <p className="mt-2 text-center text-xs font-semibold tracking-wide text-white/80">Branding Chiller</p>
+          <p className="mt-2 text-center text-xs font-semibold tracking-wide text-white/80">Branding Toko Chiller</p>
         </div>
         <NavContent />
         <div className="border-t border-white/10 p-4">
