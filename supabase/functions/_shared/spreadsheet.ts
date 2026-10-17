@@ -64,8 +64,8 @@ export async function syncSubmissionToSpreadsheet(
       "Chiller": s.has_chiller ? "YA" : "TIDAK",
       "Status":
         s.branding_status === "brandable"
-          ? "Bisa Dibranding"
-          : "Tidak Bisa Dibranding",
+          ? "DIBRANDING"
+          : "TIDAK DIBRANDING",
       "Alasan Toko Tidak di Branding": s.not_brandable_reason ?? "",
       "Foto Toko Before": links["Foto Toko Before"] ?? "",
       "Foto Chiller Before": links["Foto Chiller Before"] ?? "",
